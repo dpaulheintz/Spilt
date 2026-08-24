@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+/* ─── Spilt Social brand tokens ─────────────────────────────────── */
+:root {
+  /* core brand */
+  --champagne: #c69d60;
+  --gold-hi: #e8c687;
+  --ink: #0b0a08;
+  --ivory: #f2ede3;
+  --cobalt: #16276b;
+  --cream: #f5e1c4;
+
+  /* concept-specific extensions */
+  --cobalt-deep: #0e1b4d;
+  --paper: #f4efe4;
+  --carbon: #1e1b16;
+  --brick: #a34a2e;
+  --slate: #3f5877;
+  --ochre: #c08a3e;
+  --red-live: #c13b2a;
+  --teal-alt: #2a6b8a;
+}
+
+@theme inline {
+  --color-champagne: var(--champagne);
+  --color-gold-hi: var(--gold-hi);
+  --color-ink: var(--ink);
+  --color-ivory: var(--ivory);
+  --color-cobalt: var(--cobalt);
+  --color-cream: var(--cream);
+  --color-cobalt-deep: var(--cobalt-deep);
+  --color-paper: var(--paper);
+  --color-carbon: var(--carbon);
+  --color-brick: var(--brick);
+  --color-slate: var(--slate);
+  --color-ochre: var(--ochre);
+  --color-red-live: var(--red-live);
+  --color-teal-alt: var(--teal-alt);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* shared easing token — every concept uses this curve for DOM tweens */
+:root {
+  --ease-spilt: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

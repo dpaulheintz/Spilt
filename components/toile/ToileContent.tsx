@@ -148,8 +148,8 @@ export default function ToileContent() {
     >
       {/* ── nav: links · CINZEL MARK · links ───────────────── */}
       <header className="absolute inset-x-0 top-0 z-20">
-        <nav className="mx-auto grid max-w-6xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-6 py-6">
-          <div className="flex justify-end gap-7 text-[12px] tracking-[0.18em] uppercase">
+        <nav className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-4 px-6 py-6 md:grid-cols-[1fr_auto_1fr]">
+          <div className="hidden justify-end gap-7 text-[12px] tracking-[0.18em] uppercase md:flex">
             {["Home", "Events", "About"].map((l, i) => (
               <a
                 key={l}
@@ -170,12 +170,12 @@ export default function ToileContent() {
           <a
             href="/toile"
             onClick={fakeClick}
-            className="font-toile-display cursor-pointer px-6 text-lg font-bold tracking-[0.14em] whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="font-toile-display cursor-pointer justify-self-center px-6 text-lg font-bold tracking-[0.14em] whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ color: COBALT, outlineColor: COBALT }}
           >
             SPILT SOCIAL
           </a>
-          <div className="flex gap-7 text-[12px] tracking-[0.18em] uppercase">
+          <div className="hidden gap-7 text-[12px] tracking-[0.18em] uppercase md:flex">
             {["Membership", "Experiences", "Contact"].map((l) => (
               <a
                 key={l}
@@ -201,8 +201,7 @@ export default function ToileContent() {
           <img
             src={HERO_SRC}
             alt="Cobalt copperplate engraving of Columbus: dense toile trees, the LeVeque tower, the Statehouse, statues raising coupes"
-            className="h-full w-full object-cover"
-            style={{ objectPosition: "center top" }}
+            className="h-full w-full object-cover object-[62%_0%] md:object-[center_top]"
           />
         </div>
 

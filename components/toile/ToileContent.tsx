@@ -111,18 +111,9 @@ const SOCIAL = [
 ];
 
 export default function ToileContent() {
-  const [heroOk, setHeroOk] = useState<boolean | null>(null);
   const [email, setEmail] = useState("");
   const [inscribed, setInscribed] = useState(false);
   const heroImgRef = useRef<HTMLDivElement>(null);
-
-  /* probe the hero asset — onError on the <img> can fire pre-hydration */
-  useEffect(() => {
-    const img = new Image();
-    img.onload = () => setHeroOk(true);
-    img.onerror = () => setHeroOk(false);
-    img.src = HERO_SRC;
-  }, []);
 
   /* barely-perceptible parallax, ≤10px */
   useEffect(() => {
@@ -206,41 +197,18 @@ export default function ToileContent() {
         style={{ height: "100dvh", minHeight: 620 }}
       >
         <div ref={heroImgRef} className="absolute inset-0 will-change-transform">
-          {heroOk === null ? (
-            <div className="h-full w-full" style={{ backgroundColor: CREAM }} />
-          ) : heroOk ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={HERO_SRC}
-              alt="Cobalt copperplate engraving of Columbus: dense toile trees, the LeVeque tower, the Statehouse, statues raising coupes"
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            /* styled placeholder — never a broken image */
-            <div
-              className="flex h-full w-full items-end justify-start"
-              style={{ backgroundColor: CREAM }}
-            >
-              <div
-                className="mx-6 mb-16 flex h-[42%] w-full max-w-md flex-col items-center justify-center gap-6 border-2 p-8 sm:ml-[6vw]"
-                style={{ borderColor: COBALT, backgroundColor: IVORY }}
-              >
-                <Fleuron />
-                <p className="font-toile-display text-center text-sm tracking-[0.3em]">
-                  PLATE FORTHCOMING
-                </p>
-                <p className="text-center text-xs tracking-[0.2em] uppercase opacity-70">
-                  Place the approved engraving at /public/assets/toile-hero.png
-                </p>
-                <Fleuron />
-              </div>
-            </div>
-          )}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={HERO_SRC}
+            alt="Cobalt copperplate engraving of Columbus: dense toile trees, the LeVeque tower, the Statehouse, statues raising coupes"
+            className="h-full w-full object-cover"
+            style={{ objectPosition: "center top" }}
+          />
         </div>
 
         {/* copy block in the clear sky right of the tower */}
         <div className="absolute inset-0 z-10 flex items-start justify-center sm:justify-end">
-          <div className="mt-[16dvh] flex w-full max-w-xl flex-col items-center px-6 text-center sm:mr-[6vw] lg:mr-[10vw]">
+          <div className="mt-[15dvh] flex w-full max-w-lg flex-col items-center px-6 text-center sm:mr-[8vw] lg:mr-[15vw]">
             <p
               className="mb-6 text-[12px] tracking-[0.3em] uppercase"
               style={{
@@ -257,16 +225,23 @@ export default function ToileContent() {
               aria-label={h1}
             >
               <span aria-hidden>
-                {h1.split("").map((c, i) => (
-                  <span
-                    key={i}
-                    className="inline-block"
-                    style={{
-                      opacity: 0,
-                      animation: `toile-rise 600ms var(--ease-spilt) ${i * 60}ms forwards`,
-                    }}
-                  >
-                    {c === " " ? " " : c}
+                {["FILL YOUR", "CUP."].map((line, li) => (
+                  <span key={li} className="block whitespace-nowrap">
+                    {line.split("").map((c, i) => {
+                      const idx = li * 10 + i;
+                      return (
+                        <span
+                          key={i}
+                          className="inline-block"
+                          style={{
+                            opacity: 0,
+                            animation: `toile-rise 600ms var(--ease-spilt) ${idx * 60}ms forwards`,
+                          }}
+                        >
+                          {c === " " ? "\u00A0" : c}
+                        </span>
+                      );
+                    })}
                   </span>
                 ))}
               </span>
@@ -352,27 +327,18 @@ export default function ToileContent() {
                 className="border p-6 sm:p-8"
                 style={{ borderColor: COBALT, backgroundColor: IVORY }}
               >
-                {heroOk ? (
-                  // eslint-disable-next-line @next/next/no-img-element
+                {/* detail crop: the statue raising the coupe, right side */}
+                <div className="h-72 w-full overflow-hidden sm:h-80">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={HERO_SRC}
-                    alt="Detail of the engraving: the tower amid toile trees"
-                    className="h-72 w-full object-cover sm:h-80"
-                    style={{ objectPosition: "38% 18%" }}
+                    alt="Detail of the engraving: a statue raising a coupe among the toile trees"
+                    className="h-full w-full object-cover"
+                    style={{ objectPosition: "96% 68%", transform: "scale(1.9)", transformOrigin: "96% 68%" }}
                   />
-                ) : (
-                  <div
-                    className="flex h-72 w-full flex-col items-center justify-center gap-4 sm:h-80"
-                    style={{ backgroundColor: IVORY }}
-                  >
-                    <Fleuron />
-                    <p className="text-[11px] tracking-[0.3em] uppercase opacity-60">
-                      Detail plate forthcoming
-                    </p>
-                  </div>
-                )}
+                </div>
                 <p className="mt-4 text-center text-[11px] tracking-[0.25em] uppercase opacity-70">
-                  The Tower Above the Grove — detail
+                  The Toast — detail, plate II
                 </p>
               </div>
             </div>

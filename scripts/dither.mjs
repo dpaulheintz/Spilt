@@ -3,17 +3,24 @@
  * Spilt Social dither pipeline — cobalt-on-cream ordered-dither duotone.
  *
  * Usage:
- *   npm run dither                 # Bayer 8x8, scale 3, cobalt/cream
- *   npm run dither -- --scale 2    # chunkier/finer pixels (2|3|4)
- *   npm run dither -- --fs         # Floyd–Steinberg error diffusion
- *   npm run dither -- --color      # teal #2A6B8A variant
+ *   npm run dither                    # Bayer 8x8, scale 4, cobalt/cream
+ *   npm run dither -- --scale 3      # dot chunkiness (2|3|4)
+ *   npm run dither -- --fs           # Floyd–Steinberg error diffusion
+ *   npm run dither -- --color        # teal #2A6B8A variant
+ *   npm run dither -- --posterize 3  # 3 zones: cream / 50% dither / cobalt
+ *   npm run dither:test              # contact sheet at scales 2/3/4
+ *
+ * Pre-pass (the part that makes it read as a photograph): gaussian blur
+ * (sigma 1) → percentile contrast stretch (clip 2% shadows/highlights)
+ * → smoothstep S-curve. Real blacks and real whites BEFORE the Bayer
+ * pass — mushy midtones read as noise.
  *
  * Input:  every image in assets-raw/  (jpg/jpeg/png/webp)
  * Output: public/assets/dither/<name>.png
  *
- * If assets-raw/ is empty, four procedural placeholder scenes
- * (hero, fig-01, fig-02, band) are generated through the same pipeline
- * so the /dither page always demos.
+ * The four standard scene names the /dither page uses (hero, fig-01,
+ * fig-02, band) are generated procedurally through the same pipeline
+ * whenever no raw file claims the name — the page never breaks.
  */
 
 import { readdir, mkdir } from "node:fs/promises";
@@ -31,8 +38,11 @@ const CREAM = { r: 0xf5, g: 0xe1, b: 0xc4 }; // #F5E1C4
 const argv = process.argv.slice(2);
 const useFS = argv.includes("--fs");
 const useTeal = argv.includes("--color");
+const testMode = argv.includes("--test");
 const scaleIdx = argv.indexOf("--scale");
-const SCALE = scaleIdx >= 0 ? Math.max(1, parseInt(argv[scaleIdx + 1], 10) || 3) : 3;
+const SCALE = scaleIdx >= 0 ? Math.max(1, parseInt(argv[scaleIdx + 1], 10) || 4) : 4;
+const posterIdx = argv.indexOf("--posterize");
+const POSTERIZE = posterIdx >= 0 ? parseInt(argv[posterIdx + 1], 10) || 3 : 0;
 const DARK = useTeal ? TEAL : COBALT;
 
 /* ── 8x8 Bayer matrix ──────────────────────────────────────── */
@@ -47,16 +57,27 @@ const BAYER8 = [
   [63, 31, 55, 23, 61, 29, 53, 21],
 ];
 
+function put(out, i, c) {
+  out[i * 3] = c.r;
+  out[i * 3 + 1] = c.g;
+  out[i * 3 + 2] = c.b;
+}
+
 function ditherBayer(gray, w, h) {
   const out = Buffer.alloc(w * h * 3);
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
       const i = y * w + x;
-      const t = ((BAYER8[y % 8][x % 8] + 0.5) / 64) * 255;
-      const c = gray[i] < t ? DARK : CREAM;
-      out[i * 3] = c.r;
-      out[i * 3 + 1] = c.g;
-      out[i * 3 + 2] = c.b;
+      if (POSTERIZE === 3) {
+        // three zones: solid cobalt / 50% ordered dither / solid cream
+        const g = gray[i];
+        if (g < 85) put(out, i, DARK);
+        else if (g > 170) put(out, i, CREAM);
+        else put(out, i, BAYER8[y % 8][x % 8] < 32 ? DARK : CREAM);
+      } else {
+        const t = ((BAYER8[y % 8][x % 8] + 0.5) / 64) * 255;
+        put(out, i, gray[i] < t ? DARK : CREAM);
+      }
     }
   }
   return out;
@@ -70,12 +91,8 @@ function ditherFloydSteinberg(gray, w, h) {
       const i = y * w + x;
       const old = buf[i];
       const isDark = old < 128;
-      const val = isDark ? 0 : 255;
-      const err = old - val;
-      const c = isDark ? DARK : CREAM;
-      out[i * 3] = c.r;
-      out[i * 3 + 1] = c.g;
-      out[i * 3 + 2] = c.b;
+      const err = old - (isDark ? 0 : 255);
+      put(out, i, isDark ? DARK : CREAM);
       if (x + 1 < w) buf[i + 1] += (err * 7) / 16;
       if (y + 1 < h) {
         if (x > 0) buf[i + w - 1] += (err * 3) / 16;
@@ -87,41 +104,55 @@ function ditherFloydSteinberg(gray, w, h) {
   return out;
 }
 
-/* ── pipeline: input buffer/path → dithered PNG ────────────── */
-async function processImage(input, outName) {
-  // full-size grayscale, normalized (histogram stretch)
-  const base = sharp(input).rotate().resize(1600, null, {
-    withoutEnlargement: true,
-    fit: "inside",
-  });
-  const meta = await base.clone().grayscale().normalise().toBuffer({
-    resolveWithObject: true,
-  });
-  const fullW = meta.info.width;
-  const fullH = meta.info.height;
+/* smoothstep S-curve: pushes midtones toward black/white */
+function sCurve(gray) {
+  for (let i = 0; i < gray.length; i++) {
+    const t = gray[i] / 255;
+    gray[i] = Math.round(255 * t * t * (3 - 2 * t));
+  }
+  return gray;
+}
 
-  // dither at reduced resolution → chunky visible dots when upscaled
-  const smallW = Math.max(8, Math.round(fullW / SCALE));
-  const smallH = Math.max(8, Math.round(fullH / SCALE));
+/* ── pipeline: input → dithered PNG buffer ─────────────────── */
+async function computeDithered(input, scale) {
+  // pre-pass: blur → grayscale → 2%/98% percentile stretch
+  const meta = await sharp(input)
+    .rotate()
+    .resize(1600, null, { withoutEnlargement: true, fit: "inside" })
+    .blur(1)
+    .grayscale()
+    .normalise({ lower: 2, upper: 98 })
+    .toBuffer({ resolveWithObject: true });
+
+  const smallW = Math.max(8, Math.round(meta.info.width / scale));
+  const smallH = Math.max(8, Math.round(meta.info.height / scale));
   const { data } = await sharp(meta.data)
     .resize(smallW, smallH, { fit: "fill" })
     .grayscale()
     .raw()
     .toBuffer({ resolveWithObject: true });
 
+  const gray = sCurve(Uint8ClampedArray.from(data));
   const rgb = useFS
-    ? ditherFloydSteinberg(data, smallW, smallH)
-    : ditherBayer(data, smallW, smallH);
+    ? ditherFloydSteinberg(gray, smallW, smallH)
+    : ditherBayer(gray, smallW, smallH);
 
-  await sharp(rgb, { raw: { width: smallW, height: smallH, channels: 3 } })
-    .resize(smallW * SCALE, smallH * SCALE, { kernel: "nearest" })
+  const png = await sharp(rgb, {
+    raw: { width: smallW, height: smallH, channels: 3 },
+  })
+    .resize(smallW * scale, smallH * scale, { kernel: "nearest" })
     .png({ compressionLevel: 9, palette: true })
-    .toFile(path.join(OUT_DIR, `${outName}.png`));
+    .toBuffer();
+  return { png, w: smallW * scale, h: smallH * scale };
+}
 
+async function processImage(input, outName, scale = SCALE) {
+  const { png, w, h } = await computeDithered(input, scale);
+  await sharp(png).toFile(path.join(OUT_DIR, `${outName}.png`));
   console.log(
-    `  ✓ ${outName}.png  (${smallW * SCALE}x${smallH * SCALE}, scale ${SCALE}, ${
+    `  ✓ ${outName}.png  (${w}x${h}, scale ${scale}, ${
       useFS ? "floyd-steinberg" : "bayer8"
-    }${useTeal ? ", teal" : ""})`
+    }${POSTERIZE ? `, posterize ${POSTERIZE}` : ""}${useTeal ? ", teal" : ""})`
   );
 }
 
@@ -139,7 +170,6 @@ function svgScene(kind) {
   })();
 
   if (kind === "hero") {
-    // crowd silhouettes under a lit skyline
     let bodies = "";
     for (let i = 0; i < 60; i++) {
       const x = rand() * W;
@@ -168,7 +198,6 @@ function svgScene(kind) {
       <rect width="${W}" height="330" y="560" fill="#8a8a8a"/>
       ${bodies}`;
   } else if (kind === "fig-01") {
-    // statehouse: pediment + columns
     let cols = "";
     for (let i = 0; i < 8; i++) {
       const cx = 340 + i * 132;
@@ -189,7 +218,6 @@ function svgScene(kind) {
       <rect x="240" y="774" width="1120" height="50" fill="#7c7c7c"/>
       <rect width="${W}" height="130" y="870" fill="#565656"/>`;
   } else if (kind === "fig-02") {
-    // the loom: sawtooth roofline warehouse, hard light
     let teeth = "";
     for (let i = 0; i < 7; i++) {
       const tx = 200 + i * 180;
@@ -211,7 +239,6 @@ function svgScene(kind) {
       <rect width="${W}" height="220" y="780" fill="#4a4a4a"/>
       <rect x="1180" y="180" width="26" height="240" fill="#3a3a3a"/>`;
   } else {
-    // band: diagonal sweep texture for the membership strip
     inner = `
       <defs><linearGradient id="sweep" x1="0" y1="0" x2="1" y2="0.4">
         <stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#808080"/><stop offset="100%" stop-color="#1a1a1a"/>
@@ -225,6 +252,52 @@ function svgScene(kind) {
   );
 }
 
+async function sceneRaster(kind) {
+  return sharp(svgScene(kind)).jpeg({ quality: 92 }).toBuffer();
+}
+
+/* ── contact sheet: one source at scales 2/3/4 side by side ── */
+async function contactSheet(rawFiles) {
+  const source =
+    rawFiles.length > 0
+      ? path.join(RAW_DIR, rawFiles[0])
+      : await sceneRaster("hero");
+  const label = rawFiles.length > 0 ? rawFiles[0] : "procedural hero";
+  const TILE_H = 520;
+  const GAP = 24;
+  const tiles = [];
+  for (const s of [2, 3, 4]) {
+    const { png } = await computeDithered(source, s);
+    const resized = await sharp(png)
+      .resize(null, TILE_H)
+      .png()
+      .toBuffer();
+    const m = await sharp(resized).metadata();
+    tiles.push({ buf: resized, w: m.width });
+  }
+  const totalW = tiles.reduce((a, t) => a + t.w, 0) + GAP * 4;
+  const composites = [];
+  let x = GAP;
+  for (const t of tiles) {
+    composites.push({ input: t.buf, left: x, top: GAP });
+    x += t.w + GAP;
+  }
+  await sharp({
+    create: {
+      width: totalW,
+      height: TILE_H + GAP * 2,
+      channels: 3,
+      background: CREAM,
+    },
+  })
+    .composite(composites)
+    .png()
+    .toFile(path.join(OUT_DIR, "contact-sheet.png"));
+  console.log(
+    `  ✓ contact-sheet.png  (${label} at scales 2 / 3 / 4, left to right)`
+  );
+}
+
 /* ── main ──────────────────────────────────────────────────── */
 async function main() {
   await mkdir(OUT_DIR, { recursive: true });
@@ -235,18 +308,28 @@ async function main() {
     /* no assets-raw dir */
   }
 
+  if (testMode) {
+    console.log("Contact sheet:");
+    await contactSheet(files);
+    return;
+  }
+
+  const produced = new Set();
   if (files.length > 0) {
     console.log(`Dithering ${files.length} photo(s) from ${RAW_DIR}/:`);
     for (const f of files) {
       const name = path.parse(f).name;
       await processImage(path.join(RAW_DIR, f), name);
+      produced.add(name);
     }
-  } else {
-    console.log("assets-raw/ is empty — generating procedural placeholder scenes:");
-    for (const kind of ["hero", "fig-01", "fig-02", "band"]) {
-      const svg = svgScene(kind);
-      const raster = await sharp(svg).jpeg({ quality: 92 }).toBuffer();
-      await processImage(raster, kind);
+  }
+  const missing = ["hero", "fig-01", "fig-02", "band"].filter(
+    (k) => !produced.has(k)
+  );
+  if (missing.length > 0) {
+    console.log(`Procedural scenes for unclaimed names (${missing.join(", ")}):`);
+    for (const kind of missing) {
+      await processImage(await sceneRaster(kind), kind);
     }
   }
   console.log("Done → public/assets/dither/");

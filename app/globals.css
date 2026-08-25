@@ -54,6 +54,9 @@ body {
 .font-pixel {
   font-family: var(--font-pixel), "Courier New", monospace;
 }
+.font-italiana {
+  font-family: var(--font-italiana), Georgia, serif;
+}
 .font-toile-display {
   font-family: var(--font-toile-display), Georgia, serif;
 }

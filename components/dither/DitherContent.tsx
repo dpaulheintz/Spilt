@@ -182,18 +182,26 @@ export default function DitherContent() {
       <section className="relative overflow-hidden" style={{ minHeight: "88dvh" }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/assets/dither/hero.png"
-          alt="Dithered transmission: a Columbus crowd under the skyline"
+          src="/assets/dither/group.png"
+          alt="Dithered transmission: glasses raised against the Columbus skyline at sunset"
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="relative z-10 flex min-h-[88dvh] flex-col items-center justify-center px-4 py-20">
-          <h1
-            className="dither-outline font-dither w-[92vw] text-center text-[17vw] leading-[0.9] uppercase sm:text-[15vw]"
-            style={{ color: CREAM }}
-          >
-            GET IN
+          {/* solid cream on solid cobalt panels — no outline over the pattern */}
+          <h1 className="font-dither w-[92vw] text-center text-[15vw] leading-[1.02] uppercase sm:text-[12vw]">
+            <span
+              className="inline-block px-[0.18em] pt-[0.04em]"
+              style={{ backgroundColor: COBALT, color: CREAM }}
+            >
+              GET IN
+            </span>
             <br />
-            THE ROOM.
+            <span
+              className="inline-block px-[0.18em] pt-[0.04em]"
+              style={{ backgroundColor: COBALT, color: CREAM }}
+            >
+              THE ROOM.
+            </span>
           </h1>
           <p
             className="mt-6 border px-4 py-2 font-mono text-[11px] tracking-[0.2em] uppercase sm:text-[12px]"
@@ -218,7 +226,7 @@ export default function DitherContent() {
               style={{ borderColor: COBALT }}
             >
               <span>FIG 01 — THE BUSINESS HOP / STATEHOUSE</span>
-              <span>BAYER 8×8 · SCALE 3</span>
+              <span>BAYER 8×8 · SCALE 4</span>
             </div>
           </div>
           <div className="flex flex-col justify-center gap-6 border-t-2 p-8 lg:border-t-0 lg:border-l-2 lg:p-12" style={{ borderColor: COBALT }}>
@@ -267,7 +275,7 @@ export default function DitherContent() {
               style={{ borderColor: COBALT }}
             >
               <span>FIG 02 — FOUNDERS FAIR / THE LOOM</span>
-              <span>BAYER 8×8 · SCALE 3</span>
+              <span>BAYER 8×8 · SCALE 4</span>
             </div>
           </div>
         </div>

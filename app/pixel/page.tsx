@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
-import { Silkscreen } from "next/font/google";
+import { Italiana, Silkscreen } from "next/font/google";
 import PixelContent from "@/components/pixel/PixelContent";
 
+/* Silkscreen survives only as the particle raster source + de-rez
+   scramble glyphs; Italiana is the display face everywhere else. */
 const silkscreen = Silkscreen({
   weight: ["400", "700"],
   subsets: ["latin"],
   variable: "--font-pixel",
+});
+
+const italiana = Italiana({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-italiana",
 });
 
 export const metadata: Metadata = {
@@ -16,7 +24,7 @@ export const metadata: Metadata = {
 
 export default function PixelPage() {
   return (
-    <div className={silkscreen.variable}>
+    <div className={`${silkscreen.variable} ${italiana.variable}`}>
       <PixelContent />
     </div>
   );

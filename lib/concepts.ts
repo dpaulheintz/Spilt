@@ -15,8 +15,8 @@ export const CONCEPTS: Concept[] = [
     slug: "pixel",
     number: "01",
     name: "The Shatter",
-    bg: "#F2EDE3", // ivory
-    fg: "#0B0A08", // warm ink
+    bg: "#0B0A08", // warm ink — the room is dark
+    fg: "#F2EDE3", // ivory
     accent: "#C69D60", // champagne gold
   },
   {

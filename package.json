@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "dither": "node scripts/dither.mjs"
+    "dither": "node scripts/dither.mjs",
+    "dither:test": "node scripts/dither.mjs --test"
   },
   "dependencies": {
     "next": "15.5.23",

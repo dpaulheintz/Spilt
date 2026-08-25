@@ -5,6 +5,8 @@ import { useEffect, useRef } from "react";
 /* ── palette (this page only) ─────────────────────────────── */
 const INK = "#0B0A08";
 const IVORY = "#F2EDE3";
+const GOLD = "#C69D60"; // particles in motion
+const GOLD_HI = "#E8C687"; // particles moving fast — the spark
 
 /* ── physics tuning ───────────────────────────────────────── */
 const SPRING = 0.016; // pull toward home
@@ -229,21 +231,32 @@ export default function PixelHero({
     }
 
     function drawSky() {
+      // gold-tinted dither at low opacity — city lights on ink
       skyCtx.clearRect(0, 0, W, H);
-      skyCtx.fillStyle = INK;
-      skyCtx.globalAlpha = 0.82;
+      skyCtx.fillStyle = GOLD;
+      skyCtx.globalAlpha = 0.32;
       for (let i = 0; i < sCount; i++)
         if (heal[i] >= thresh[i]) skyCtx.fillRect(sx[i] | 0, sy[i] | 0, 2, 2);
       skyCtx.globalAlpha = 1;
     }
 
     function drawWord() {
+      // three heat bins: ivory at rest → champagne in motion → highlight
+      // gold at speed; particles cool back to ivory as they settle home
       wordCtx.clearRect(0, 0, W, H);
-      wordCtx.fillStyle = INK;
       const d = dotSize;
       const o = d / 2;
-      for (let i = 0; i < count; i++)
-        wordCtx.fillRect((px[i] - o) | 0, (py[i] - o) | 0, d, d);
+      for (let bin = 0; bin < 3; bin++) {
+        wordCtx.fillStyle = bin === 0 ? IVORY : bin === 1 ? GOLD : GOLD_HI;
+        for (let i = 0; i < count; i++) {
+          const v2 = vx[i] * vx[i] + vy[i] * vy[i];
+          const dx = px[i] - hx[i];
+          const dy = py[i] - hy[i];
+          const d2 = dx * dx + dy * dy;
+          const b = v2 > 7 ? 2 : v2 > 0.35 || d2 > 120 ? 1 : 0;
+          if (b === bin) wordCtx.fillRect((px[i] - o) | 0, (py[i] - o) | 0, d, d);
+        }
+      }
     }
 
     /* ── per-frame simulation ─────────────────────────────── */
@@ -494,7 +507,7 @@ export default function PixelHero({
     <section
       ref={wrapRef}
       className="relative h-dvh min-h-[560px] overflow-hidden"
-      style={{ backgroundColor: IVORY }}
+      style={{ backgroundColor: INK }}
       aria-label="SPILT — interactive wordmark"
     >
       <canvas
@@ -513,19 +526,19 @@ export default function PixelHero({
       <div className="pointer-events-none absolute inset-0 z-10">
         <p
           className="absolute top-[19%] left-1/2 w-full -translate-x-1/2 px-4 text-center font-mono text-[11px] tracking-[0.34em] uppercase sm:text-xs"
-          style={{ color: INK }}
+          style={{ color: IVORY }}
         >
           {eyebrow}
         </p>
         <p
-          className="font-pixel absolute top-[63%] left-1/2 w-full -translate-x-1/2 px-4 text-center text-sm sm:text-lg"
-          style={{ color: INK }}
+          className="font-italiana absolute top-[63%] left-1/2 w-full -translate-x-1/2 px-4 text-center text-lg sm:text-2xl"
+          style={{ color: IVORY }}
         >
           {subline}
         </p>
         <p
           className="absolute bottom-6 left-6 font-mono text-[10px] tracking-[0.3em] uppercase"
-          style={{ color: INK, opacity: 0.5 }}
+          style={{ color: IVORY, opacity: 0.5 }}
         >
           Scroll ↓
         </p>

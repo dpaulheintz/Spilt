@@ -4,9 +4,13 @@ import { useEffect, useRef, useState } from "react";
 
 const GLYPHS = "▓▒░█#<>/*+";
 
+type Cell = { ch: string; scrambling: boolean };
+
 /**
  * Heading that "de-rezzes" in on scroll: characters resolve from
- * scrambled glyphs to crisp over ~400ms, staggered per character.
+ * scrambled pixel-font glyphs to crisp serif over ~400ms, staggered.
+ * The pixel face appears ONLY during the scramble; settled text
+ * inherits the heading's display face (Italiana).
  */
 export default function DerezHeading({
   text,
@@ -18,7 +22,9 @@ export default function DerezHeading({
   delay?: number;
 }) {
   const ref = useRef<HTMLHeadingElement>(null);
-  const [display, setDisplay] = useState(text);
+  const [cells, setCells] = useState<Cell[]>(() =>
+    text.split("").map((ch) => ({ ch, scrambling: false }))
+  );
   const started = useRef(false);
 
   useEffect(() => {
@@ -40,20 +46,23 @@ export default function DerezHeading({
         const iv = setInterval(() => {
           const t = performance.now() - start;
           let done = true;
-          const out = chars.map((c, i) => {
-            if (c === " ") return c;
+          const out: Cell[] = chars.map((c, i) => {
+            if (c === " ") return { ch: c, scrambling: false };
             const lt = t - i * STAGGER;
             if (lt < 0) {
               done = false;
-              return " ";
+              return { ch: " ", scrambling: false };
             }
             if (lt < DUR) {
               done = false;
-              return GLYPHS[(Math.random() * GLYPHS.length) | 0];
+              return {
+                ch: GLYPHS[(Math.random() * GLYPHS.length) | 0],
+                scrambling: true,
+              };
             }
-            return c;
+            return { ch: c, scrambling: false };
           });
-          setDisplay(out.join(""));
+          setCells(out);
           if (done) clearInterval(iv);
         }, 40);
       },
@@ -65,7 +74,13 @@ export default function DerezHeading({
 
   return (
     <h2 ref={ref} aria-label={text} className={className}>
-      <span aria-hidden>{display}</span>
+      <span aria-hidden>
+        {cells.map((cell, i) => (
+          <span key={i} className={cell.scrambling ? "font-pixel" : undefined}>
+            {cell.ch}
+          </span>
+        ))}
+      </span>
     </h2>
   );
 }

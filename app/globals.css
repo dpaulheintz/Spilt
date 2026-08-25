@@ -54,6 +54,41 @@ body {
 .font-pixel {
   font-family: var(--font-pixel), "Courier New", monospace;
 }
+.font-toile-display {
+  font-family: var(--font-toile-display), Georgia, serif;
+}
+.font-toile-body {
+  font-family: var(--font-toile-body), var(--font-geist-sans), sans-serif;
+}
+
+/* ── /toile: engraved plate rules + hero rise ─────────────── */
+.toile-rule {
+  background-color: #16276b;
+}
+.toile-rule-ink {
+  background-color: #16276b;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 500ms var(--ease-spilt);
+}
+.plate:hover .toile-rule-ink,
+.plate:focus-within .toile-rule-ink {
+  transform: scaleX(1);
+}
+.plate:hover .coupe-fill,
+.plate:focus-within .coupe-fill {
+  transform: scaleY(1) !important;
+}
+@keyframes toile-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 /* shared easing token — every concept uses this curve for DOM tweens */
 :root {

@@ -50,6 +50,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* concept display faces (set per-page via next/font variables) */
+.font-pixel {
+  font-family: var(--font-pixel), "Courier New", monospace;
+}
+
 /* shared easing token — every concept uses this curve for DOM tweens */
 :root {
   --ease-spilt: cubic-bezier(0.16, 1, 0.3, 1);

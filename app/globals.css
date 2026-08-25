@@ -61,6 +61,177 @@ body {
   font-family: var(--font-toile-body), var(--font-geist-sans), sans-serif;
 }
 
+/* ── /still: candlelit vanitas table ───────────────────────── */
+.font-still {
+  font-family: var(--font-still-display), Georgia, serif;
+}
+.still-caps {
+  font-family: var(--font-still-display), Georgia, serif;
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  font-variant: small-caps;
+}
+/* CRITICAL: blend + filter + motion all live on the <img> itself.
+   Any filter/transform on an ancestor creates a stacking context and
+   isolates mix-blend-mode — the black rectangles come back. */
+.still-obj .still-img {
+  mix-blend-mode: lighten;
+  /* contrast crushes the near-black art backgrounds to true black
+     so no rectangle edges survive the lighten composite */
+  filter: brightness(var(--obj-bright, 0.82)) contrast(1.15);
+  scale: var(--obj-scale, 1);
+  translate: var(--plx, 0px) var(--ply, 0px);
+  position: relative;
+  top: 0;
+  transition: top 400ms var(--ease-spilt);
+  will-change: filter, scale, translate;
+}
+.still-obj:hover .still-img,
+.still-obj:focus .still-img,
+.still-obj:focus-visible .still-img {
+  top: -6px;
+  --obj-bright: 1.12;
+  --obj-scale: 1.03;
+}
+.still-label {
+  opacity: 0;
+  margin-top: 2px;
+  transition: opacity 300ms var(--ease-spilt);
+}
+.still-obj:hover .still-label,
+.still-obj:focus .still-label,
+.still-obj:focus-visible .still-label {
+  opacity: 1;
+}
+.still-label-mobile {
+  opacity: 0.7;
+}
+.still-label-rule {
+  height: 1px;
+  margin-top: 6px;
+  background-color: #c69d60;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 300ms var(--ease-spilt);
+}
+.still-obj:hover .still-label-rule,
+.still-obj:focus .still-label-rule,
+.still-obj:focus-visible .still-label-rule {
+  transform: scaleX(1);
+}
+
+/* idle micro-motion — subtle, staggered, slow */
+.still-anim-rock {
+  animation: still-rock 7s ease-in-out infinite;
+}
+@keyframes still-rock {
+  0%,
+  100% {
+    rotate: -1.2deg;
+  }
+  50% {
+    rotate: 1.2deg;
+  }
+}
+.still-anim-breathe {
+  animation: still-breathe 6s ease-in-out 1.5s infinite;
+}
+@keyframes still-breathe {
+  0%,
+  100% {
+    scale: var(--obj-scale, 1);
+  }
+  50% {
+    scale: calc(var(--obj-scale, 1) * 1.012);
+  }
+}
+.still-bell-swing {
+  animation: still-swing 0.9s var(--ease-spilt);
+  transform-origin: top center;
+}
+@keyframes still-swing {
+  0% {
+    rotate: 0deg;
+  }
+  25% {
+    rotate: 7deg;
+  }
+  55% {
+    rotate: -5deg;
+  }
+  80% {
+    rotate: 2deg;
+  }
+  100% {
+    rotate: 0deg;
+  }
+}
+/* specular sweeps: coupe shimmer (continuous) + key glint (~9s) */
+.still-sweep {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: lighten;
+  pointer-events: none;
+  translate: var(--plx, 0px) var(--ply, 0px);
+  background: linear-gradient(
+    105deg,
+    transparent 42%,
+    rgba(232, 198, 135, 0.16) 50%,
+    transparent 58%
+  );
+  background-size: 300% 100%;
+}
+.still-sweep-shimmer {
+  animation: still-sweep-move 8s ease-in-out infinite;
+}
+.still-sweep-glint {
+  animation: still-sweep-move 9s ease-in-out infinite;
+  animation-timing-function: cubic-bezier(0.7, 0, 0.3, 1);
+}
+@keyframes still-sweep-move {
+  0%,
+  55% {
+    background-position: 120% 0;
+  }
+  70%,
+  100% {
+    background-position: -60% 0;
+  }
+}
+.still-obj {
+  position: relative;
+}
+.still-obj .still-obj-img {
+  position: relative;
+  display: block;
+}
+/* panel rise */
+.still-panel {
+  animation: still-panel-in 600ms var(--ease-spilt);
+}
+.still-panel-body {
+  animation: still-panel-rise 600ms var(--ease-spilt);
+}
+@keyframes still-panel-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes still-panel-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ── /dither: display face, ticker marquee, outline type ───── */
 .font-dither {
   font-family: var(--font-dither-display), Impact, sans-serif;

@@ -43,6 +43,14 @@ export const CONCEPTS: Concept[] = [
     fg: "#16276B", // cobalt
     accent: "#C13B2A", // brick red (screaming)
   },
+  {
+    slug: "still",
+    number: "05",
+    name: "The Table",
+    bg: "#070503", // near-black — fades through darkness
+    fg: "#C69D60", // champagne gold
+    accent: "#E8C687", // highlight gold
+  },
 ];
 
 export function conceptIndexFromPath(pathname: string): number {

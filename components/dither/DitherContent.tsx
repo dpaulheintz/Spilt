@@ -173,7 +173,7 @@ export default function DitherContent() {
             ))}
           </div>
           <span className="font-mono text-[11px] font-bold tracking-[0.15em]">
-            CONCEPT 04/04
+            CONCEPT 04/05
           </span>
         </nav>
       </header>
@@ -448,8 +448,8 @@ export default function DitherContent() {
             ))}
           </div>
           <div className="sm:text-right">
-            TRANSMISSION 4 OF 4
-            <br />© 2026 SPILT SOCIAL · CONCEPT 4 OF 4
+            TRANSMISSION 4 OF 5
+            <br />© 2026 SPILT SOCIAL · CONCEPT 4 OF 5
           </div>
         </div>
       </footer>

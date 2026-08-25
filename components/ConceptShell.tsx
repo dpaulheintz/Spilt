@@ -70,7 +70,8 @@ export default function ConceptShell() {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (e.key === "ArrowLeft") go(activeIndex - 1);
       else if (e.key === "ArrowRight") go(activeIndex + 1);
-      else if (["1", "2", "3", "4"].includes(e.key)) go(Number(e.key) - 1);
+      else if (/^[1-9]$/.test(e.key) && Number(e.key) <= CONCEPTS.length)
+        go(Number(e.key) - 1);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);

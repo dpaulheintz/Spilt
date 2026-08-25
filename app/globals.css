@@ -61,6 +61,43 @@ body {
   font-family: var(--font-toile-body), var(--font-geist-sans), sans-serif;
 }
 
+/* ── /dither: display face, ticker marquee, outline type ───── */
+.font-dither {
+  font-family: var(--font-dither-display), Impact, sans-serif;
+}
+.dither-marquee {
+  animation: dither-scroll 28s linear infinite;
+}
+@keyframes dither-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+/* cream fill + cobalt outline: stays readable crossing the image */
+.dither-outline {
+  -webkit-text-stroke: 3px #16276b;
+  paint-order: stroke fill;
+  text-shadow: none;
+}
+@media (max-width: 640px) {
+  .dither-outline {
+    -webkit-text-stroke-width: 2px;
+  }
+}
+/* hollow outline type for SPRING 2026 */
+.dither-outline-only {
+  color: transparent;
+  -webkit-text-stroke: 3px #16276b;
+}
+@media (max-width: 640px) {
+  .dither-outline-only {
+    -webkit-text-stroke-width: 2px;
+  }
+}
+
 /* ── /fieldnotes: typewriter face, paper fiber, ruled lines ── */
 .font-typer {
   font-family: var(--font-typer), "Courier New", monospace;

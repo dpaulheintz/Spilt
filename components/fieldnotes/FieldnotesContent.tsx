@@ -108,7 +108,7 @@ export default function FieldnotesContent() {
             SPILT SOCIAL — FIELD NOTES
           </a>
           <div className="flex gap-5 text-[11px] tracking-[0.14em]">
-            {["No. 01", "No. 02", "No. 03", "No. 04", "No. 05"].map((l, i) => (
+            {["No. 01", "No. 02", "No. 03", "No. 04", "No. 05", "No. 06"].map((l, i) => (
               <a
                 key={l}
                 href="#"
@@ -292,7 +292,7 @@ export default function FieldnotesContent() {
             </a>
           </span>
           <span style={{ color: BRICK }}>
-            ENTRY 3 OF 5 — SPILT SOCIAL CONCEPTS · © 2026 SPILT SOCIAL
+            ENTRY 3 OF 6 — SPILT SOCIAL CONCEPTS · © 2026 SPILT SOCIAL
           </span>
         </div>
       </footer>

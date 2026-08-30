@@ -64,6 +64,21 @@ body {
   font-family: var(--font-toile-body), var(--font-geist-sans), sans-serif;
 }
 
+/* ── /passport: production-calm; one press-in keyframe ─────── */
+.font-passport {
+  font-family: var(--font-passport), system-ui, sans-serif;
+}
+@keyframes passport-press {
+  from {
+    transform: scale(1.2);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 /* ── /still: candlelit vanitas table ───────────────────────── */
 .font-still {
   font-family: var(--font-still-display), Georgia, serif;

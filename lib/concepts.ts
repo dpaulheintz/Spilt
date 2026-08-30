@@ -51,6 +51,14 @@ export const CONCEPTS: Concept[] = [
     fg: "#C69D60", // champagne gold
     accent: "#E8C687", // highlight gold
   },
+  {
+    slug: "passport",
+    number: "06",
+    name: "The Passport",
+    bg: "#FAF6EE", // warm cream
+    fg: "#2A2620", // warm charcoal
+    accent: "#C69D60", // gold
+  },
 ];
 
 export function conceptIndexFromPath(pathname: string): number {

@@ -481,7 +481,7 @@ export default function ToileContent() {
         <div className="flex flex-col items-center gap-3 pt-8 text-center text-[11px] tracking-[0.25em] uppercase sm:flex-row sm:justify-between sm:text-left">
           <span>{BRAND.contact}</span>
           <span className="opacity-70">
-            Plate II of V — Spilt Social Concepts
+            Plate II of VI — Spilt Social Concepts
           </span>
           <span className="opacity-70">© MMXXVI Spilt Social</span>
         </div>

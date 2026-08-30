@@ -268,7 +268,7 @@ export default function PixelContent() {
             ))}
           </span>
           <span style={{ opacity: 0.55 }}>
-            © 2026 Spilt Social · Concept 1 of 5
+            © 2026 Spilt Social · Concept 1 of 6
           </span>
         </div>
       </footer>

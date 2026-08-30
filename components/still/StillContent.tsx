@@ -457,7 +457,7 @@ export default function StillContent() {
           Spilt
         </span>
         <span className="still-caps absolute top-7 right-6 z-10 hidden md:block" style={{ color: GOLD }}>
-          05 / 05
+          05 / 06
         </span>
         <span
           className="still-caps absolute right-6 bottom-5 z-10 hidden sm:block"

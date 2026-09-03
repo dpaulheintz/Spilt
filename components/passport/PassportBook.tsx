@@ -43,26 +43,56 @@ function fmtDate(iso: string) {
 const PAD_OUT = "9%"; // outer/vertical padding
 const PAD_GUTTER = "13%"; // spine-side padding (9% + 4% gutter margin)
 
-function pageStyle(side: "left" | "right"): React.CSSProperties {
+type PageSide = "left" | "right" | "single";
+
+function pageStyle(side: PageSide): React.CSSProperties {
   return {
     backgroundColor: PAPER,
     backgroundImage: "url(/assets/passport/spread.png)",
     backgroundSize: "260% 150%",
-    backgroundPosition: side === "left" ? "30% 48%" : "70% 48%",
+    // single pages sample off-center: 50% would land on the source
+    // render's baked center crease and draw a seam down the page
+    backgroundPosition:
+      side === "left" ? "30% 48%" : side === "right" ? "70% 48%" : "28% 48%",
     backgroundBlendMode: "soft-light",
     overflow: "hidden",
     paddingTop: "5%",
     paddingBottom: "5%",
-    paddingLeft: side === "left" ? PAD_OUT : PAD_GUTTER,
+    paddingLeft: side === "left" || side === "single" ? PAD_OUT : PAD_GUTTER,
     paddingRight: side === "left" ? PAD_GUTTER : PAD_OUT,
+    // each page is its own size container: cqw units scale with the
+    // page itself, so single-page mobile type stays readable
+    containerType: "inline-size",
   };
+}
+
+/** the cropped cover render as a page face (shared desktop + mobile) */
+function CoverFace() {
+  return (
+    <div className="relative h-full w-full overflow-hidden" style={{ backgroundColor: "#1B1F3B" }}>
+      {/* the render's navy leather occupies only ~67% of the file
+          (measured); crop computed from its bounding box */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/assets/passport/cover.png"
+        alt="Spilt Social passport cover"
+        style={{
+          position: "absolute",
+          width: "177.6%",
+          maxWidth: "none",
+          left: "-35.3%",
+          top: "-35.4%",
+        }}
+      />
+    </div>
+  );
 }
 
 function InsideCover({ earned }: { earned: Set<string> }) {
   return (
     <div className="flex h-full w-full flex-col" style={pageStyle("left")}>
       <p
-        className="text-center font-mono text-[clamp(7px,1.6cqw,11px)] tracking-[0.3em] uppercase opacity-60"
+        className="text-center font-mono text-[clamp(7px,3.2cqw,11px)] tracking-[0.3em] uppercase opacity-60"
         style={{ color: CHARCOAL }}
       >
         Collect the rooms
@@ -85,7 +115,7 @@ function InsideCover({ earned }: { earned: Set<string> }) {
         )}
       </div>
       <p
-        className="mt-auto text-center font-mono text-[clamp(6px,1.4cqw,10px)] tracking-[0.24em] uppercase opacity-40"
+        className="mt-auto text-center font-mono text-[clamp(6px,2.8cqw,10px)] tracking-[0.24em] uppercase opacity-40"
         style={{ color: CHARCOAL }}
       >
         Stamps are earned, never given
@@ -98,13 +128,13 @@ function IdPage() {
   return (
     <div className="flex h-full w-full flex-col" style={pageStyle("right")}>
       <p
-        className="font-mono text-[clamp(7px,1.7cqw,12px)] tracking-[0.26em] uppercase"
+        className="font-mono text-[clamp(7px,3.4cqw,12px)] tracking-[0.26em] uppercase"
         style={{ color: CHARCOAL, opacity: 0.7 }}
       >
         Spilt Social — Social Passport
       </p>
       <div
-        className="mt-[8%] space-y-[4%] text-[clamp(10px,2.6cqw,17px)]"
+        className="mt-[8%] space-y-[4%] text-[clamp(10px,5.2cqw,17px)]"
         style={{ color: CHARCOAL }}
       >
         {(
@@ -125,7 +155,7 @@ function IdPage() {
       <div className="mt-auto">
         <div className="mb-[4%] h-px w-full" style={{ backgroundColor: `${GOLD}88` }} />
         <p
-          className="truncate font-mono text-[clamp(7px,1.6cqw,11px)] tracking-[0.08em] opacity-45"
+          className="truncate font-mono text-[clamp(7px,3.2cqw,11px)] tracking-[0.08em] opacity-45"
           style={{ color: CHARCOAL }}
         >
           P&lt;USA&lt;SPILT&lt;SOCIAL&lt;&lt;COLUMBUS&lt;OH&lt;EST2023&lt;&lt;&lt;&lt;&lt;&lt;&lt;
@@ -140,7 +170,7 @@ function IdPage() {
  *  flexible spacer / footer pinned to the bottom padding. Content sits
  *  directly on the page paper — no inner card. overflow:hidden on the
  *  page (via pageStyle) is the hard containment guarantee. */
-function EventPage({ ev, side }: { ev: SpiltEvent; side: "left" | "right" }) {
+function EventPage({ ev, side }: { ev: SpiltEvent; side: PageSide }) {
   const cta = ctaForFormat(ev.format);
   return (
     <div
@@ -150,7 +180,7 @@ function EventPage({ ev, side }: { ev: SpiltEvent; side: "left" | "right" }) {
       {/* sticker zone — fixed height so every page aligns */}
       <div
         className="flex items-center justify-center"
-        style={{ height: "clamp(32px, 8.5cqw, 64px)" }}
+        style={{ height: "clamp(32px, 17cqw, 64px)" }}
       >
         <Sticker
           format={ev.format}
@@ -161,14 +191,14 @@ function EventPage({ ev, side }: { ev: SpiltEvent; side: "left" | "right" }) {
       </div>
       {/* title zone — fluid type tied to book width, 3 lines max */}
       <h3
-        className="font-heading mt-[4%] line-clamp-3 max-w-full text-[clamp(9.5px,2.3cqw,18px)] leading-snug"
+        className="font-heading mt-[4%] line-clamp-3 max-w-full text-[clamp(9.5px,4.6cqw,18px)] leading-snug"
         style={{ color: CHARCOAL, overflowWrap: "break-word" }}
       >
         {ev.title}
       </h3>
       <div className="my-[4%] h-px w-[52%]" style={{ backgroundColor: `${GOLD}99` }} />
       <div
-        className="w-full min-w-0 space-y-[2%] text-left font-mono text-[clamp(6.5px,1.7cqw,12px)] leading-snug tracking-[0.06em]"
+        className="w-full min-w-0 space-y-[2%] text-left font-mono text-[clamp(6.5px,3.4cqw,12px)] leading-snug tracking-[0.06em]"
         style={{ color: CHARCOAL, overflowWrap: "break-word" }}
       >
         <p>
@@ -189,7 +219,7 @@ function EventPage({ ev, side }: { ev: SpiltEvent; side: "left" | "right" }) {
         href={ev.poshUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-[5%] inline-block w-max max-w-full cursor-pointer px-[1.6em] py-[0.8em] text-[clamp(7px,1.8cqw,12px)] font-medium tracking-[0.06em] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="mt-[5%] inline-flex min-h-[44px] w-max max-w-full cursor-pointer items-center px-[1.6em] py-[0.8em] text-[clamp(7px,3.6cqw,12px)] font-medium tracking-[0.06em] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2"
         style={{ backgroundColor: GOLD, color: CHARCOAL, outlineColor: CHARCOAL }}
         onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = GOLD_HI)}
         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = GOLD)}
@@ -199,7 +229,7 @@ function EventPage({ ev, side }: { ev: SpiltEvent; side: "left" | "right" }) {
       {/* flexible spacer */}
       <div aria-hidden />
       <p
-        className="w-full pt-[3%] text-center font-mono text-[clamp(5.5px,1.3cqw,9px)] leading-tight tracking-[0.12em] uppercase opacity-40"
+        className="w-full pt-[3%] text-center font-mono text-[clamp(5.5px,2.6cqw,9px)] leading-tight tracking-[0.12em] uppercase opacity-40"
         style={{ color: CHARCOAL }}
       >
         posh.vip · admits one · non-transferable
@@ -237,7 +267,7 @@ function BlankPage() {
         <circle cx="100" cy="100" r="88" fill="none" stroke={GOLD} strokeWidth="0.8" />
       </svg>
       <p
-        className="mt-[8%] text-center font-mono text-[clamp(7px,1.6cqw,11px)] tracking-[0.26em] uppercase opacity-55"
+        className="mt-[8%] text-center font-mono text-[clamp(7px,3.2cqw,11px)] tracking-[0.26em] uppercase opacity-55"
         style={{ color: CHARCOAL }}
       >
         More stamps coming — check back soon.
@@ -249,6 +279,390 @@ function BlankPage() {
 /* ── the book ──────────────────────────────────────────────── */
 
 type Spread = { left: React.ReactNode; right: React.ReactNode };
+
+/* ── mobile book: single page per view, gesture-driven ─────────
+   No scroll-jacking: the section is normal document height and the
+   page scrolls straight past it. Turns come from horizontal swipes
+   (touch-action: pan-y + horizontal-intent detection), edge taps,
+   corner arrows, and ←/→. Swipe velocity carries the turn. */
+const MOBILE_ROT = -115; // past 90° the leaf's front face vanishes
+const MOBILE_DUR = 350;
+
+function MobileBook({
+  pages,
+  reduced,
+  onPageViewed,
+}: {
+  pages: { node: React.ReactNode; format?: FormatSlug }[];
+  reduced: boolean;
+  onPageViewed?: (format: FormatSlug) => void;
+}) {
+  const N = pages.length;
+  const [index, setIndex] = useState(0);
+  const indexRef = useRef(0);
+  indexRef.current = index;
+
+  const sectionRef = useRef<HTMLElement>(null);
+  const faceRef = useRef<HTMLDivElement>(null);
+  const curRef = useRef<HTMLDivElement>(null);
+  const prevRef = useRef<HTMLDivElement>(null);
+  const shadowRef = useRef<HTMLDivElement>(null);
+  const animating = useRef(false);
+  const gesture = useRef({
+    active: false,
+    claimed: false,
+    dir: 0 as 0 | 1 | -1,
+    x0: 0,
+    y0: 0,
+    t0: 0,
+    p: 0,
+  });
+
+  /* stamp earning on page view */
+  useEffect(() => {
+    const f = pages[index]?.format;
+    if (f && f !== "other") onPageViewed?.(f);
+  }, [index, pages, onPageViewed]);
+
+  /* reset leaf transforms the instant the index commits (before paint) */
+  useEffect(() => {
+    if (curRef.current) {
+      curRef.current.getAnimations().forEach((a) => a.cancel());
+      curRef.current.style.transform = "rotateY(0deg)";
+    }
+    if (prevRef.current) {
+      prevRef.current.getAnimations().forEach((a) => a.cancel());
+      prevRef.current.style.transform = `rotateY(${MOBILE_ROT}deg)`;
+    }
+    if (shadowRef.current) shadowRef.current.style.opacity = "0";
+    animating.current = false;
+  }, [index]);
+
+  const commit = useCallback(
+    (dir: 1 | -1, fromP: number, velocity: number) => {
+      const i = indexRef.current;
+      const to = i + dir;
+      if (to < 0 || to > N - 1) return;
+      if (reduced) {
+        setIndex(to); // instant crossfade — no turn
+        return;
+      }
+      animating.current = true;
+      // fast flick = fast turn
+      const dur = Math.max(
+        140,
+        Math.min(420, (MOBILE_DUR - velocity * 220) * (1 - fromP * 0.6))
+      );
+      const ease = "cubic-bezier(0.16, 1, 0.3, 1)";
+      const el = dir === 1 ? curRef.current : prevRef.current;
+      if (!el) return;
+      const from = dir === 1 ? MOBILE_ROT * fromP : MOBILE_ROT * (1 - fromP);
+      const to_ = dir === 1 ? MOBILE_ROT : 0;
+      const anim = el.animate(
+        [{ transform: `rotateY(${from}deg)` }, { transform: `rotateY(${to_}deg)` }],
+        { duration: dur, easing: ease, fill: "forwards" }
+      );
+      shadowRef.current?.animate([{ opacity: "0.3" }, { opacity: "0" }], {
+        duration: dur,
+        easing: ease,
+        fill: "forwards",
+      });
+      // commit on finish, with a timeout fallback — finish events are
+      // frame-gated and can be swallowed (backgrounded tab, cancelled
+      // animation); the page must never wedge mid-turn
+      let committed = false;
+      const done = () => {
+        if (committed) return;
+        committed = true;
+        setIndex(to);
+      };
+      anim.onfinish = done;
+      setTimeout(done, dur + 120);
+    },
+    [N, reduced]
+  );
+
+  const revert = useCallback((dir: 1 | -1, fromP: number) => {
+    const el = dir === 1 ? curRef.current : prevRef.current;
+    if (!el) return;
+    animating.current = true;
+    const from = dir === 1 ? MOBILE_ROT * fromP : MOBILE_ROT * (1 - fromP);
+    const to = dir === 1 ? 0 : MOBILE_ROT;
+    const anim = el.animate(
+      [{ transform: `rotateY(${from}deg)` }, { transform: `rotateY(${to}deg)` }],
+      { duration: 220, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "forwards" }
+    );
+    let settled = false;
+    const done = () => {
+      if (settled) return;
+      settled = true;
+      el.style.transform = `rotateY(${to}deg)`;
+      el.getAnimations().forEach((a) => a.cancel());
+      animating.current = false;
+    };
+    anim.onfinish = done;
+    setTimeout(done, 340);
+  }, []);
+
+  const step = useCallback(
+    (dir: 1 | -1) => {
+      if (animating.current) return;
+      commit(dir, 0, 0);
+    },
+    [commit]
+  );
+
+  /* touch gestures: only claim clearly-horizontal swipes; vertical
+     intent always scrolls the page */
+  useEffect(() => {
+    const face = faceRef.current;
+    if (!face) return;
+    const g = gesture.current;
+
+    const onStart = (e: TouchEvent) => {
+      // gestures on the book never reach window-level listeners
+      // (the concept switcher's swipe handler in particular)
+      e.stopPropagation();
+      if (animating.current) return;
+      g.active = true;
+      g.claimed = false;
+      g.dir = 0;
+      g.x0 = e.touches[0].clientX;
+      g.y0 = e.touches[0].clientY;
+      g.t0 = performance.now();
+      g.p = 0;
+    };
+    const onMove = (e: TouchEvent) => {
+      e.stopPropagation();
+      if (!g.active) return;
+      const dx = e.touches[0].clientX - g.x0;
+      const dy = e.touches[0].clientY - g.y0;
+      if (!g.claimed) {
+        if (Math.abs(dy) > 14 && Math.abs(dy) > Math.abs(dx)) {
+          g.active = false; // vertical intent — the page scrolls
+          return;
+        }
+        if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy)) {
+          const dir = dx < 0 ? 1 : -1;
+          const to = indexRef.current + dir;
+          if (to < 0 || to > N - 1) {
+            g.active = false;
+            return;
+          }
+          g.claimed = true;
+          g.dir = dir as 1 | -1;
+        } else return;
+      }
+      e.preventDefault(); // claimed: the book owns this gesture
+      const w = face.getBoundingClientRect().width;
+      g.p = Math.min(1, Math.max(0, Math.abs(dx) / (w * 0.6)));
+      if (reduced) return; // no live drag under reduced motion
+      if (g.dir === 1 && curRef.current) {
+        curRef.current.style.transform = `rotateY(${MOBILE_ROT * g.p}deg)`;
+      } else if (g.dir === -1 && prevRef.current) {
+        prevRef.current.style.transform = `rotateY(${MOBILE_ROT * (1 - g.p)}deg)`;
+      }
+      if (shadowRef.current)
+        shadowRef.current.style.opacity = String(Math.sin(g.p * Math.PI) * 0.3);
+    };
+    const onEnd = (e: TouchEvent) => {
+      e.stopPropagation();
+      if (!g.active) return;
+      g.active = false;
+      if (!g.claimed) return;
+      const dt = Math.max(1, performance.now() - g.t0);
+      const dx = e.changedTouches[0].clientX - g.x0;
+      const velocity = Math.abs(dx) / dt; // px/ms
+      if (g.p > 0.32 || velocity > 0.45) commit(g.dir as 1 | -1, g.p, velocity);
+      else revert(g.dir as 1 | -1, g.p);
+    };
+
+    face.addEventListener("touchstart", onStart, { passive: true });
+    face.addEventListener("touchmove", onMove, { passive: false });
+    face.addEventListener("touchend", onEnd, { passive: true });
+    return () => {
+      face.removeEventListener("touchstart", onStart);
+      face.removeEventListener("touchmove", onMove);
+      face.removeEventListener("touchend", onEnd);
+    };
+  }, [N, commit, revert, reduced]);
+
+  /* arrow keys while in view + concept-switcher swipe guard */
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    let inView = false;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        inView = e.isIntersecting && e.intersectionRatio > 0.3;
+        if (inView) document.body.dataset.spiltBookNav = "1";
+        else delete document.body.dataset.spiltBookNav;
+      },
+      { threshold: [0, 0.3, 0.6] }
+    );
+    io.observe(section);
+    const onKey = (e: KeyboardEvent) => {
+      if (!inView) return;
+      const el = e.target as HTMLElement | null;
+      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA")) return;
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        step(1);
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        step(-1);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      io.disconnect();
+      delete document.body.dataset.spiltBookNav;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [step]);
+
+  /* pagination scrub */
+  const scrubTo = (clientX: number, el: HTMLElement) => {
+    const r = el.getBoundingClientRect();
+    const i = Math.round(((clientX - r.left) / r.width) * (N - 1));
+    const clamped = Math.min(N - 1, Math.max(0, i));
+    if (clamped !== indexRef.current) setIndex(clamped);
+  };
+
+  return (
+    <section
+      ref={sectionRef}
+      id="events"
+      className="flex min-h-[92vh] scroll-mt-16 flex-col items-center justify-center px-4 py-16"
+    >
+      <div
+        ref={faceRef}
+        className="relative"
+        style={{
+          width: "min(88vw, 430px)",
+          aspectRatio: "5 / 7",
+          perspective: "1600px",
+          touchAction: "pan-y",
+          filter: "drop-shadow(0 18px 40px rgba(42,38,32,0.25))",
+        }}
+      >
+        {/* next page beneath */}
+        <div className="absolute inset-0 overflow-hidden rounded-xl" style={{ zIndex: 10 }}>
+          {pages[index + 1]?.node ?? (
+            <div className="h-full w-full rounded-xl" style={{ backgroundColor: "#171310" }} />
+          )}
+        </div>
+        {/* current leaf */}
+        <div
+          ref={curRef}
+          className="absolute inset-0"
+          style={{
+            zIndex: 20,
+            transformOrigin: "left center",
+            backfaceVisibility: "hidden",
+            willChange: "transform",
+          }}
+        >
+          <div className="absolute inset-0 overflow-hidden rounded-xl">
+            {pages[index].node}
+            <div
+              ref={shadowRef}
+              aria-hidden
+              className="pointer-events-none absolute inset-0 rounded-xl"
+              style={{
+                opacity: 0,
+                background: "linear-gradient(to right, rgba(20,17,13,0.5), transparent 60%)",
+              }}
+            />
+          </div>
+        </div>
+        {/* previous leaf — parked past 90°, invisible via backface */}
+        <div
+          ref={prevRef}
+          className="absolute inset-0"
+          style={{
+            zIndex: 30,
+            transform: `rotateY(${MOBILE_ROT}deg)`,
+            transformOrigin: "left center",
+            backfaceVisibility: "hidden",
+            willChange: "transform",
+          }}
+        >
+          <div className="absolute inset-0 overflow-hidden rounded-xl">
+            {index > 0 ? pages[index - 1].node : null}
+          </div>
+        </div>
+        {/* edge tap zones (redundant affordance; arrows + dashes carry a11y) */}
+        <button
+          type="button"
+          tabIndex={-1}
+          aria-hidden
+          onClick={() => step(-1)}
+          className="absolute inset-y-0 left-0 z-[40] w-[16%] cursor-pointer"
+          style={{ background: "transparent" }}
+        />
+        <button
+          type="button"
+          tabIndex={-1}
+          aria-hidden
+          onClick={() => step(1)}
+          className="absolute inset-y-0 right-0 z-[40] w-[16%] cursor-pointer"
+          style={{ background: "transparent" }}
+        />
+        <BookArrows
+          onPrev={() => step(-1)}
+          onNext={() => step(1)}
+          canPrev={index > 0}
+          canNext={index < N - 1}
+        />
+      </div>
+
+      {/* wayfinding: gold dashes + mono counter, tappable + scrubbable */}
+      <div className="mt-7 flex items-center gap-4">
+        <div
+          className="flex touch-none items-center"
+          role="tablist"
+          aria-label="Passport pages"
+          onPointerDown={(e) => {
+            e.currentTarget.setPointerCapture(e.pointerId);
+            scrubTo(e.clientX, e.currentTarget);
+          }}
+          onPointerMove={(e) => {
+            if (e.buttons > 0) scrubTo(e.clientX, e.currentTarget);
+          }}
+        >
+          {pages.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              role="tab"
+              aria-selected={i === index}
+              aria-label={`Page ${i + 1} of ${N}`}
+              onClick={() => setIndex(i)}
+              className="flex h-8 cursor-pointer items-center px-[3px] focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ outlineColor: GOLD }}
+            >
+              <span
+                className="block h-[2px] transition-all duration-300"
+                style={{
+                  width: i === index ? 22 : 9,
+                  backgroundColor: i === index ? GOLD : "rgba(42,38,32,0.25)",
+                }}
+              />
+            </button>
+          ))}
+        </div>
+        <span
+          className="font-mono text-[11px] tracking-[0.14em]"
+          style={{ color: CHARCOAL, opacity: 0.6 }}
+          aria-live="polite"
+        >
+          {index + 1} / {N}
+        </span>
+      </div>
+    </section>
+  );
+}
 
 export default function PassportBook({
   events,
@@ -280,6 +694,24 @@ export default function PassportBook({
   }, [events, earned]);
   const S = spreads.length; // leaves = S (cover + S-1 page leaves), progress 0..S
 
+  /* mobile (≤1024px): single-page, gesture-driven — flat page list in
+     the same reading order as the desktop spreads */
+  const pages = useMemo<{ node: React.ReactNode; format?: FormatSlug }[]>(() => {
+    const list: { node: React.ReactNode; format?: FormatSlug }[] = [
+      { node: <CoverFace /> },
+      { node: <InsideCover earned={earned} /> },
+      { node: <IdPage /> },
+      ...events.map((ev) => ({
+        node: <EventPage ev={ev} side={"single" as const} />,
+        format: ev.format,
+      })),
+    ];
+    if (events.length % 2 === 1) list.push({ node: <BlankPage /> });
+    return list;
+  }, [events, earned]);
+
+  const [isMobile, setIsMobile] = useState(false);
+
   const outerRef = useRef<HTMLDivElement>(null);
   const bookRef = useRef<HTMLDivElement>(null);
   const leafRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -296,6 +728,11 @@ export default function PassportBook({
 
   useEffect(() => {
     setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    const mq = window.matchMedia("(max-width: 1024px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
   }, []);
 
   const progressFromScroll = useCallback(() => {
@@ -345,6 +782,7 @@ export default function PassportBook({
 
   /* main loop: scroll → lerped leaf rotations, shadows, z-order */
   useEffect(() => {
+    if (isMobile) return; // mobile book is gesture-driven, no scroll mapping
     if (reduced) {
       const onScroll = () => {
         const p = Math.round(progressFromScroll());
@@ -416,11 +854,12 @@ export default function PassportBook({
       window.removeEventListener("wheel", cancelSettle);
       window.removeEventListener("touchstart", cancelSettle);
     };
-  }, [S, reduced, events, onSpreadViewed, progressFromScroll, scrollToProgress]);
+  }, [S, reduced, isMobile, events, onSpreadViewed, progressFromScroll, scrollToProgress]);
 
   /* keyboard + swipe while the book is in view; flag off the concept
      switcher's own arrow/swipe handlers via a body dataset marker */
   useEffect(() => {
+    if (isMobile) return; // MobileBook owns its own gestures + keys
     const outer = outerRef.current;
     if (!outer) return;
     let inView = false;
@@ -473,7 +912,7 @@ export default function PassportBook({
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchend", onTouchEnd);
     };
-  }, [S, goToSpread, reduced, progressFromScroll]);
+  }, [S, goToSpread, reduced, isMobile, progressFromScroll]);
 
   /* ── render ──────────────────────────────────────────────── */
   /* the ONLY rounded corners in the book: its two outer edges.
@@ -482,6 +921,14 @@ export default function PassportBook({
      correct. Gutter corners stay square. */
   const FACE_R_RIGHT = "0 12px 12px 0";
   const FACE_R_LEFT = "12px 0 0 12px";
+
+  /* ≤1024px: equal-class single-page book — no scroll-driving, no
+     sticky height; the page scrolls straight past it */
+  if (isMobile) {
+    return (
+      <MobileBook pages={pages} reduced={reduced} onPageViewed={onSpreadViewed} />
+    );
+  }
 
   const spineOverlay = (
     <div aria-hidden className="pointer-events-none absolute inset-y-0 left-1/2 z-[60] w-10 -translate-x-1/2">
@@ -578,27 +1025,7 @@ export default function PassportBook({
                 className="absolute inset-0 overflow-hidden"
                 style={{ backfaceVisibility: "hidden", borderRadius: FACE_R_RIGHT }}
               >
-                {i === 0 ? (
-                  /* the image IS the cover face. The render's navy leather
-                     occupies only ~67% of the file (measured), so the crop
-                     is computed from its bounding box: the leather bleeds
-                     past all four face edges and none of the baked
-                     background or baked shadow survives. */
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src="/assets/passport/cover.png"
-                    alt="Spilt Social passport cover — scroll to open"
-                    style={{
-                      position: "absolute",
-                      width: "177.6%",
-                      maxWidth: "none",
-                      left: "-35.3%",
-                      top: "-35.4%",
-                    }}
-                  />
-                ) : (
-                  spreads[i - 1].right
-                )}
+                {i === 0 ? <CoverFace /> : spreads[i - 1].right}
                 {/* moving turn shadow */}
                 <div
                   ref={(el) => {

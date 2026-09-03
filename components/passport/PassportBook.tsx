@@ -22,14 +22,15 @@ const easeSettle = (t: number) => 1 - Math.pow(1 - t, 5); // ≈ [0.16,1,0.3,1]
 const smooth = (t: number) => t * t * (3 - 2 * t); // weighted turn feel
 
 function fmtDate(iso: string) {
-  return new Date(iso)
-    .toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      timeZone: "America/New_York",
-    })
-    .toUpperCase();
+  // passport style: 02 OCT 2026
+  const parts = new Intl.DateTimeFormat("en-US", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    timeZone: "America/New_York",
+  }).formatToParts(new Date(iso));
+  const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
+  return `${get("day")} ${get("month")} ${get("year")}`.toUpperCase();
 }
 
 /* ── page faces ────────────────────────────────────────────── */
@@ -122,70 +123,104 @@ function IdPage() {
   );
 }
 
-function EventLeft({ ev }: { ev: SpiltEvent }) {
+/** ONE event per page, laid out vertically top→bottom:
+ *  sticker → title → gold rule → mono details → CTA → footer line. */
+function EventPage({ ev, side }: { ev: SpiltEvent; side: "left" | "right" }) {
+  const cta = ctaForFormat(ev.format);
   return (
     <div
-      className="flex h-full w-full flex-col items-center p-[7%] text-center"
-      style={pageStyle("left")}
+      className="flex h-full w-full flex-col items-center px-[6%] py-[5%] text-center"
+      style={pageStyle(side)}
     >
-      <Sticker format={ev.format} width={150} rotation={-4} className="mt-[4%] w-[55%] min-w-[110px]" />
+      {/* balance the column: content floats slightly above center
+          (top spacer 2 : bottom spacer 3) */}
+      <div className="flex-[2]" aria-hidden />
+      <Sticker
+        format={ev.format}
+        width={120}
+        rotation={side === "left" ? -3 : 3}
+        className="w-[44%] min-w-[92px]"
+      />
       <h3
-        className="font-heading mt-[9%] text-[clamp(15px,3.4cqw,24px)] leading-snug"
+        className="font-heading mt-[4%] line-clamp-3 text-[clamp(12px,2.6cqw,19px)] leading-snug"
         style={{ color: CHARCOAL }}
       >
         {ev.title}
       </h3>
-      {ev.city && (
-        <p
-          className="mt-[4%] text-[clamp(7px,1.8cqw,12px)] tracking-[0.22em] uppercase opacity-55"
-          style={{ color: CHARCOAL }}
-        >
-          {ev.city}
-        </p>
-      )}
-    </div>
-  );
-}
-
-function EventRight({ ev }: { ev: SpiltEvent }) {
-  const cta = ctaForFormat(ev.format);
-  return (
-    <div className="flex h-full w-full flex-col p-[8%]" style={pageStyle("right")}>
+      <div className="my-[4%] h-px w-[52%]" style={{ backgroundColor: `${GOLD}99` }} />
       <div
-        className="space-y-[5%] font-mono text-[clamp(8px,2cqw,14px)] tracking-[0.1em]"
+        className="w-full space-y-[2.5%] text-left font-mono text-[clamp(8px,1.8cqw,12px)] leading-snug tracking-[0.08em]"
         style={{ color: CHARCOAL }}
       >
         <p>
-          <span className="opacity-50">DATE:&nbsp;</span>
+          <span className="opacity-50">DATE:&nbsp;&nbsp;</span>
           {fmtDate(ev.dateISO)}
         </p>
         <p>
-          <span className="opacity-50">TIME:&nbsp;</span>
+          <span className="opacity-50">TIME:&nbsp;&nbsp;</span>
           {ev.timeDisplay.toUpperCase()}
         </p>
-        <p className="leading-relaxed">
+        <p className="line-clamp-2">
           <span className="opacity-50">VENUE:&nbsp;</span>
           {ev.venue}
           {ev.city ? `, ${ev.city}` : ""}
         </p>
       </div>
-      <div className="my-[8%] h-px w-full" style={{ backgroundColor: `${GOLD}99` }} />
       <a
         href={ev.poshUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-block w-max cursor-pointer px-6 py-3 text-[clamp(8px,1.9cqw,13px)] font-medium tracking-[0.06em] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="mt-[6%] inline-block w-max cursor-pointer px-5 py-2.5 text-[clamp(8px,1.8cqw,12px)] font-medium tracking-[0.06em] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2"
         style={{ backgroundColor: GOLD, color: CHARCOAL, outlineColor: CHARCOAL }}
         onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = GOLD_HI)}
         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = GOLD)}
       >
         {cta.label}
       </a>
+      <div className="flex-[3]" aria-hidden />
       <p
-        className="mt-auto font-mono text-[clamp(6px,1.4cqw,10px)] tracking-[0.2em] uppercase opacity-40"
+        className="pt-[3%] font-mono text-[clamp(6px,1.3cqw,9px)] tracking-[0.18em] uppercase opacity-40"
         style={{ color: CHARCOAL }}
       >
         posh.vip · admits one · non-transferable
+      </p>
+    </div>
+  );
+}
+
+/** Designed blank page for an odd event count — never a raw empty page. */
+function BlankPage() {
+  return (
+    <div
+      className="relative flex h-full w-full flex-col items-center justify-center p-[8%]"
+      style={pageStyle("right")}
+    >
+      {/* faint guilloche medallion */}
+      <svg
+        viewBox="0 0 200 200"
+        className="w-[46%] opacity-[0.13]"
+        aria-hidden
+      >
+        {Array.from({ length: 12 }).map((_, i) => (
+          <ellipse
+            key={i}
+            cx="100"
+            cy="100"
+            rx="88"
+            ry="34"
+            fill="none"
+            stroke={CHARCOAL}
+            strokeWidth="0.7"
+            transform={`rotate(${i * 15} 100 100)`}
+          />
+        ))}
+        <circle cx="100" cy="100" r="88" fill="none" stroke={GOLD} strokeWidth="0.8" />
+      </svg>
+      <p
+        className="mt-[8%] text-center font-mono text-[clamp(7px,1.6cqw,11px)] tracking-[0.26em] uppercase opacity-55"
+        style={{ color: CHARCOAL }}
+      >
+        More stamps coming — check back soon.
       </p>
     </div>
   );
@@ -204,16 +239,25 @@ export default function PassportBook({
   earned: Set<string>;
   onSpreadViewed?: (format: FormatSlug) => void;
 }) {
-  const spreads = useMemo<Spread[]>(
-    () => [
+  const spreads = useMemo<Spread[]>(() => {
+    // two events per open spread, chronological, left page first;
+    // an odd count closes on the designed blank page
+    const eventSpreads: Spread[] = [];
+    for (let i = 0; i < events.length; i += 2) {
+      eventSpreads.push({
+        left: <EventPage ev={events[i]} side="left" />,
+        right: events[i + 1] ? (
+          <EventPage ev={events[i + 1]} side="right" />
+        ) : (
+          <BlankPage />
+        ),
+      });
+    }
+    return [
       { left: <InsideCover earned={earned} />, right: <IdPage /> },
-      ...events.map((ev) => ({
-        left: <EventLeft ev={ev} />,
-        right: <EventRight ev={ev} />,
-      })),
-    ],
-    [events, earned]
-  );
+      ...eventSpreads,
+    ];
+  }, [events, earned]);
   const S = spreads.length; // leaves = S (cover + S-1 page leaves), progress 0..S
 
   const outerRef = useRef<HTMLDivElement>(null);
@@ -335,12 +379,13 @@ export default function PassportBook({
       if (leftBaseRef.current) {
         leftBaseRef.current.style.opacity = Math.min(1, d * 1.4).toFixed(3);
       }
-      // stamp earning: entering an event spread (spread s at progress s+1)
+      // stamp earning: an event spread holds TWO events — earn both formats
       const atSpread = Math.round(d) - 1;
       if (atSpread !== viewedRef.current && atSpread >= 1 && atSpread < S) {
         viewedRef.current = atSpread;
-        const ev = events[atSpread - 1];
-        if (ev && ev.format !== "other") onSpreadViewed?.(ev.format);
+        for (const ev of [events[(atSpread - 1) * 2], events[(atSpread - 1) * 2 + 1]]) {
+          if (ev && ev.format !== "other") onSpreadViewed?.(ev.format);
+        }
       }
       raf = requestAnimationFrame(frame);
     };

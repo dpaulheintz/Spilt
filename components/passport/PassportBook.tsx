@@ -35,20 +35,32 @@ function fmtDate(iso: string) {
 
 /* ── page faces ────────────────────────────────────────────── */
 
-/** shared paper: spread.png as low-contrast texture, never structure */
+/** shared paper: spread.png as low-contrast texture only. Oversized and
+ *  cropped INTO the paper so the render's baked page edges/margins bleed
+ *  out of view — they were reading as a phantom inner card. Content sits
+ *  directly on this paper, edge to edge. Gutter side gets ~4% extra
+ *  padding like a real bound book; nothing may cross the spine. */
+const PAD_OUT = "9%"; // outer/vertical padding
+const PAD_GUTTER = "13%"; // spine-side padding (9% + 4% gutter margin)
+
 function pageStyle(side: "left" | "right"): React.CSSProperties {
   return {
     backgroundColor: PAPER,
     backgroundImage: "url(/assets/passport/spread.png)",
-    backgroundSize: "200% 100%",
-    backgroundPosition: side === "left" ? "left center" : "right center",
+    backgroundSize: "260% 150%",
+    backgroundPosition: side === "left" ? "30% 48%" : "70% 48%",
     backgroundBlendMode: "soft-light",
+    overflow: "hidden",
+    paddingTop: "5%",
+    paddingBottom: "5%",
+    paddingLeft: side === "left" ? PAD_OUT : PAD_GUTTER,
+    paddingRight: side === "left" ? PAD_GUTTER : PAD_OUT,
   };
 }
 
 function InsideCover({ earned }: { earned: Set<string> }) {
   return (
-    <div className="flex h-full w-full flex-col p-[6%]" style={pageStyle("left")}>
+    <div className="flex h-full w-full flex-col" style={pageStyle("left")}>
       <p
         className="text-center font-mono text-[clamp(7px,1.6cqw,11px)] tracking-[0.3em] uppercase opacity-60"
         style={{ color: CHARCOAL }}
@@ -84,7 +96,7 @@ function InsideCover({ earned }: { earned: Set<string> }) {
 
 function IdPage() {
   return (
-    <div className="flex h-full w-full flex-col p-[7%]" style={pageStyle("right")}>
+    <div className="flex h-full w-full flex-col" style={pageStyle("right")}>
       <p
         className="font-mono text-[clamp(7px,1.7cqw,12px)] tracking-[0.26em] uppercase"
         style={{ color: CHARCOAL, opacity: 0.7 }}
@@ -123,34 +135,41 @@ function IdPage() {
   );
 }
 
-/** ONE event per page, laid out vertically top→bottom:
- *  sticker → title → gold rule → mono details → CTA → footer line. */
+/** ONE event per page on a fixed vertical grid of reserved zones:
+ *  sticker (fixed) / title (3-line clamp) / rule / details / CTA /
+ *  flexible spacer / footer pinned to the bottom padding. Content sits
+ *  directly on the page paper — no inner card. overflow:hidden on the
+ *  page (via pageStyle) is the hard containment guarantee. */
 function EventPage({ ev, side }: { ev: SpiltEvent; side: "left" | "right" }) {
   const cta = ctaForFormat(ev.format);
   return (
     <div
-      className="flex h-full w-full flex-col items-center px-[6%] py-[5%] text-center"
+      className="grid h-full w-full grid-rows-[auto_minmax(0,auto)_auto_auto_auto_minmax(0,1fr)_auto] justify-items-center text-center"
       style={pageStyle(side)}
     >
-      {/* balance the column: content floats slightly above center
-          (top spacer 2 : bottom spacer 3) */}
-      <div className="flex-[2]" aria-hidden />
-      <Sticker
-        format={ev.format}
-        width={120}
-        rotation={side === "left" ? -3 : 3}
-        className="w-[44%] min-w-[92px]"
-      />
+      {/* sticker zone — fixed height so every page aligns */}
+      <div
+        className="flex items-center justify-center"
+        style={{ height: "clamp(32px, 8.5cqw, 64px)" }}
+      >
+        <Sticker
+          format={ev.format}
+          width={116}
+          rotation={side === "left" ? -3 : 3}
+          className="h-full w-auto max-w-full"
+        />
+      </div>
+      {/* title zone — fluid type tied to book width, 3 lines max */}
       <h3
-        className="font-heading mt-[4%] line-clamp-3 text-[clamp(12px,2.6cqw,19px)] leading-snug"
-        style={{ color: CHARCOAL }}
+        className="font-heading mt-[4%] line-clamp-3 max-w-full text-[clamp(9.5px,2.3cqw,18px)] leading-snug"
+        style={{ color: CHARCOAL, overflowWrap: "break-word" }}
       >
         {ev.title}
       </h3>
       <div className="my-[4%] h-px w-[52%]" style={{ backgroundColor: `${GOLD}99` }} />
       <div
-        className="w-full space-y-[2.5%] text-left font-mono text-[clamp(8px,1.8cqw,12px)] leading-snug tracking-[0.08em]"
-        style={{ color: CHARCOAL }}
+        className="w-full min-w-0 space-y-[2%] text-left font-mono text-[clamp(6.5px,1.7cqw,12px)] leading-snug tracking-[0.06em]"
+        style={{ color: CHARCOAL, overflowWrap: "break-word" }}
       >
         <p>
           <span className="opacity-50">DATE:&nbsp;&nbsp;</span>
@@ -170,16 +189,17 @@ function EventPage({ ev, side }: { ev: SpiltEvent; side: "left" | "right" }) {
         href={ev.poshUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-[6%] inline-block w-max cursor-pointer px-5 py-2.5 text-[clamp(8px,1.8cqw,12px)] font-medium tracking-[0.06em] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="mt-[5%] inline-block w-max max-w-full cursor-pointer px-[1.6em] py-[0.8em] text-[clamp(7px,1.8cqw,12px)] font-medium tracking-[0.06em] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2"
         style={{ backgroundColor: GOLD, color: CHARCOAL, outlineColor: CHARCOAL }}
         onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = GOLD_HI)}
         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = GOLD)}
       >
         {cta.label}
       </a>
-      <div className="flex-[3]" aria-hidden />
+      {/* flexible spacer */}
+      <div aria-hidden />
       <p
-        className="pt-[3%] font-mono text-[clamp(6px,1.3cqw,9px)] tracking-[0.18em] uppercase opacity-40"
+        className="w-full pt-[3%] text-center font-mono text-[clamp(5.5px,1.3cqw,9px)] leading-tight tracking-[0.12em] uppercase opacity-40"
         style={{ color: CHARCOAL }}
       >
         posh.vip · admits one · non-transferable
@@ -192,7 +212,7 @@ function EventPage({ ev, side }: { ev: SpiltEvent; side: "left" | "right" }) {
 function BlankPage() {
   return (
     <div
-      className="relative flex h-full w-full flex-col items-center justify-center p-[8%]"
+      className="relative flex h-full w-full flex-col items-center justify-center"
       style={pageStyle("right")}
     >
       {/* faint guilloche medallion */}
@@ -456,6 +476,13 @@ export default function PassportBook({
   }, [S, goToSpread, reduced, progressFromScroll]);
 
   /* ── render ──────────────────────────────────────────────── */
+  /* the ONLY rounded corners in the book: its two outer edges.
+     Right-half faces round their right corners; a back face's radius
+     lands on the left outer edge after the 180° flip — automatically
+     correct. Gutter corners stay square. */
+  const FACE_R_RIGHT = "0 12px 12px 0";
+  const FACE_R_LEFT = "12px 0 0 12px";
+
   const spineOverlay = (
     <div aria-hidden className="pointer-events-none absolute inset-y-0 left-1/2 z-[60] w-10 -translate-x-1/2">
       <div
@@ -479,17 +506,16 @@ export default function PassportBook({
         <div className="sticky top-0 flex h-screen items-center justify-center px-4">
           <div
             ref={bookRef}
-            className="relative overflow-hidden shadow-[0_30px_70px_rgba(42,38,32,0.25)]"
+            className="relative overflow-hidden rounded-xl shadow-[0_30px_70px_rgba(42,38,32,0.25)]"
             style={{
-              width: "min(92vw, 1080px)",
+              width: "min(92vw, 1080px, 111.4vh)",
               aspectRatio: "10 / 7",
-              maxHeight: "78vh",
               containerType: "inline-size",
             }}
           >
             <div key={s} className="grid h-full grid-cols-2 transition-opacity duration-500">
-              <div className="h-full overflow-hidden">{spreads[s].left}</div>
-              <div className="h-full overflow-hidden">{spreads[s].right}</div>
+              <div className="h-full overflow-hidden rounded-l-xl">{spreads[s].left}</div>
+              <div className="h-full overflow-hidden rounded-r-xl">{spreads[s].right}</div>
             </div>
             {spineOverlay}
             <BookArrows
@@ -511,9 +537,8 @@ export default function PassportBook({
           ref={bookRef}
           className="relative"
           style={{
-            width: "min(92vw, 1080px)",
+            width: "min(92vw, 1080px, 111.4vh)",
             aspectRatio: "10 / 7",
-            maxHeight: "78vh",
             perspective: "2000px",
             containerType: "inline-size",
             filter: "drop-shadow(0 30px 60px rgba(42,38,32,0.28))",
@@ -523,10 +548,13 @@ export default function PassportBook({
           <div
             ref={leftBaseRef}
             className="absolute inset-y-0 left-0 w-1/2"
-            style={{ backgroundColor: "#171310", opacity: 0 }}
+            style={{ backgroundColor: "#171310", opacity: 0, borderRadius: FACE_R_LEFT }}
           />
           {/* right base: final spread's right page */}
-          <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden" style={{ zIndex: 0 }}>
+          <div
+            className="absolute inset-y-0 right-0 w-1/2 overflow-hidden"
+            style={{ zIndex: 0, borderRadius: FACE_R_RIGHT }}
+          >
             {spreads[S - 1].right}
           </div>
 
@@ -548,14 +576,25 @@ export default function PassportBook({
               {/* front face */}
               <div
                 className="absolute inset-0 overflow-hidden"
-                style={{ backfaceVisibility: "hidden" }}
+                style={{ backfaceVisibility: "hidden", borderRadius: FACE_R_RIGHT }}
               >
                 {i === 0 ? (
+                  /* the image IS the cover face. The render's navy leather
+                     occupies only ~67% of the file (measured), so the crop
+                     is computed from its bounding box: the leather bleeds
+                     past all four face edges and none of the baked
+                     background or baked shadow survives. */
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src="/assets/passport/cover.png"
                     alt="Spilt Social passport cover — scroll to open"
-                    className="h-full w-full object-cover"
+                    style={{
+                      position: "absolute",
+                      width: "177.6%",
+                      maxWidth: "none",
+                      left: "-35.3%",
+                      top: "-35.4%",
+                    }}
                   />
                 ) : (
                   spreads[i - 1].right
@@ -574,10 +613,14 @@ export default function PassportBook({
                   }}
                 />
               </div>
-              {/* back face */}
+              {/* back face — radius mirrors onto the left outer edge */}
               <div
                 className="absolute inset-0 overflow-hidden"
-                style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+                style={{
+                  backfaceVisibility: "hidden",
+                  transform: "rotateY(180deg)",
+                  borderRadius: FACE_R_RIGHT,
+                }}
               >
                 {spreads[i].left}
               </div>

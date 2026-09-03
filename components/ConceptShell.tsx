@@ -68,6 +68,10 @@ export default function ConceptShell() {
       )
         return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
+      // the /passport book owns arrows + swipe while it's in view
+      if (document.body.dataset.spiltBookNav === "1") {
+        if (e.key === "ArrowLeft" || e.key === "ArrowRight") return;
+      }
       if (e.key === "ArrowLeft") go(activeIndex - 1);
       else if (e.key === "ArrowRight") go(activeIndex + 1);
       else if (/^[1-9]$/.test(e.key) && Number(e.key) <= CONCEPTS.length)
@@ -86,6 +90,7 @@ export default function ConceptShell() {
       startY = e.touches[0].clientY;
     };
     const onEnd = (e: TouchEvent) => {
+      if (document.body.dataset.spiltBookNav === "1") return; // book owns swipe
       const dx = e.changedTouches[0].clientX - startX;
       const dy = e.changedTouches[0].clientY - startY;
       if (Math.abs(dx) > 64 && Math.abs(dx) > Math.abs(dy) * 1.5) {

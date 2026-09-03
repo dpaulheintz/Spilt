@@ -7,12 +7,15 @@
     "build": "next build --turbopack",
     "start": "next start",
     "dither": "node scripts/dither.mjs",
-    "dither:test": "node scripts/dither.mjs --test"
+    "dither:test": "node scripts/dither.mjs --test",
+    "fetch:events": "node scripts/fetch-posh.mjs"
   },
   "dependencies": {
+    "@vercel/blob": "^2.8.0",
     "next": "15.5.23",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "server-only": "^0.0.1",
     "sharp": "^0.35.3"
   },
   "devDependencies": {

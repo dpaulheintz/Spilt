@@ -1,0 +1,49 @@
+{
+  "note": "Hand-editable fallback — used whenever live Posh data is empty or invalid.",
+  "events": [
+    {
+      "id": "fallback-business-hop-columbus",
+      "title": "The Columbus Business Hop",
+      "format": "business-hop",
+      "dateISO": "2026-09-16T20:00:00.000-04:00",
+      "timeDisplay": "4:00 PM",
+      "venue": "Ohio Statehouse",
+      "city": "Columbus",
+      "poshUrl": "https://posh.vip/e/the-columbus-business-hop-at-the-ohio-statehouse",
+      "imageUrl": ""
+    },
+    {
+      "id": "fallback-founders-fair",
+      "title": "Columbus Founders Fair",
+      "format": "founders-fair",
+      "dateISO": "2026-10-02T10:00:00.000-04:00",
+      "timeDisplay": "10:00 AM",
+      "venue": "The Loom",
+      "city": "Columbus",
+      "poshUrl": "https://posh.vip/e/founders-fair-columbus",
+      "imageUrl": ""
+    },
+    {
+      "id": "fallback-move-fest",
+      "title": "MOVE Fest",
+      "format": "move-fest",
+      "dateISO": "2026-10-03T14:00:00.000-04:00",
+      "timeDisplay": "2:00 PM",
+      "venue": "Huntington Park",
+      "city": "Columbus",
+      "poshUrl": "https://posh.vip/e/move-fest-2026",
+      "imageUrl": ""
+    },
+    {
+      "id": "fallback-business-hop-cincinnati",
+      "title": "The Cincinnati Business Hop",
+      "format": "business-hop",
+      "dateISO": "2026-10-05T16:00:00.000-04:00",
+      "timeDisplay": "4:00 PM",
+      "venue": "Prim on 5th",
+      "city": "Cincinnati",
+      "poshUrl": "https://posh.vip/e/the-cincinnati-business-hop-at-prim",
+      "imageUrl": ""
+    }
+  ]
+}

@@ -17,13 +17,15 @@ export type StampDef = {
   target: string;
 };
 
+export const INK_NAVY = "#1B1F3B";
+
 export const STAMPS: StampDef[] = [
   { id: "manifesto", label: "FILL YOUR CUP", shape: "round", ink: INK_GOLD, rotation: -6, target: "manifesto" },
-  { id: "venues", label: "COLUMBUS OH", shape: "rect", ink: INK_SLATE, rotation: 4, target: "venues" },
-  { id: "ev-0", label: "BUSINESS HOP", shape: "round", ink: INK_GOLD, rotation: 7, target: "whats-on" },
-  { id: "ev-1", label: "MOVE & MINGLE", shape: "rect", ink: INK_RED, rotation: -3, target: "whats-on" },
-  { id: "ev-2", label: "FOUNDERS FAIR", shape: "round", ink: INK_SLATE, rotation: 5, target: "whats-on" },
-  { id: "ev-3", label: "MOVE FEST", shape: "rect", ink: INK_RED, rotation: -7, target: "whats-on" },
+  { id: "move-and-mingle", label: "MOVE & MINGLE", shape: "rect", ink: INK_SLATE, rotation: -3, target: "move-and-mingle" },
+  { id: "move-fest", label: "MOVE FEST", shape: "round", ink: INK_SLATE, rotation: 6, target: "move-fest" },
+  { id: "business-hop", label: "BUSINESS HOP", shape: "rect", ink: INK_GOLD, rotation: 4, target: "business-hop" },
+  { id: "founders-fair", label: "FOUNDERS FAIR", shape: "round", ink: INK_RED, rotation: -7, target: "founders-fair" },
+  { id: "tapt", label: "TAPT", shape: "rect", ink: INK_NAVY, rotation: 5, target: "tapt" },
   { id: "subscribed", label: "SUBSCRIBED", shape: "round", ink: INK_GOLD, rotation: 3, target: "subscribe" },
 ];
 

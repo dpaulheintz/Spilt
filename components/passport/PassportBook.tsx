@@ -167,14 +167,18 @@ function IdPage() {
 
 /** ONE event per page on a fixed vertical grid of reserved zones:
  *  sticker (fixed) / title (3-line clamp) / rule / details / CTA /
- *  flexible spacer / footer pinned to the bottom padding. Content sits
- *  directly on the page paper — no inner card. overflow:hidden on the
- *  page (via pageStyle) is the hard containment guarantee. */
+ *  footer pinned to the bottom padding. Free space is distributed
+ *  through THREE flexible gaps (after the rule, after the details,
+ *  after the CTA) so content flows down the whole page instead of
+ *  packing at the top with a dead lower half. The gaps collapse to
+ *  zero when the page is tight, so containment is untouched. Content
+ *  sits directly on the page paper — no inner card; overflow:hidden
+ *  on the page (via pageStyle) is the hard containment guarantee. */
 function EventPage({ ev, side }: { ev: SpiltEvent; side: PageSide }) {
   const cta = ctaForFormat(ev.format);
   return (
     <div
-      className="grid h-full w-full grid-rows-[auto_minmax(0,auto)_auto_auto_auto_minmax(0,1fr)_auto] justify-items-center text-center"
+      className="grid h-full w-full grid-rows-[auto_minmax(0,auto)_auto_minmax(0,0.9fr)_auto_minmax(0,1fr)_auto_minmax(0,1.4fr)_auto] justify-items-center text-center"
       style={pageStyle(side)}
     >
       {/* sticker zone — fixed height so every page aligns */}
@@ -196,9 +200,11 @@ function EventPage({ ev, side }: { ev: SpiltEvent; side: PageSide }) {
       >
         {ev.title}
       </h3>
-      <div className="my-[4%] h-px w-[52%]" style={{ backgroundColor: `${GOLD}99` }} />
+      <div className="mt-[4%] h-px w-[52%]" style={{ backgroundColor: `${GOLD}99` }} />
+      {/* flexible gap: rule → details */}
+      <div aria-hidden />
       <div
-        className="w-full min-w-0 space-y-[2%] text-left font-mono text-[clamp(6.5px,3.4cqw,12px)] leading-snug tracking-[0.06em]"
+        className="w-full min-w-0 space-y-[3%] text-left font-mono text-[clamp(6.5px,3.4cqw,12px)] leading-snug tracking-[0.06em]"
         style={{ color: CHARCOAL, overflowWrap: "break-word" }}
       >
         <p>
@@ -215,18 +221,20 @@ function EventPage({ ev, side }: { ev: SpiltEvent; side: PageSide }) {
           {ev.city ? `, ${ev.city}` : ""}
         </p>
       </div>
+      {/* flexible gap: details → CTA */}
+      <div aria-hidden />
       <a
         href={ev.poshUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-[5%] inline-flex min-h-[44px] w-max max-w-full cursor-pointer items-center px-[1.6em] py-[0.8em] text-[clamp(7px,3.6cqw,12px)] font-medium tracking-[0.06em] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="inline-flex min-h-[44px] w-max max-w-full cursor-pointer items-center px-[1.6em] py-[0.8em] text-[clamp(7px,3.6cqw,12px)] font-medium tracking-[0.06em] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2"
         style={{ backgroundColor: GOLD, color: CHARCOAL, outlineColor: CHARCOAL }}
         onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = GOLD_HI)}
         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = GOLD)}
       >
         {cta.label}
       </a>
-      {/* flexible spacer */}
+      {/* flexible gap: CTA → footer (largest share) */}
       <div aria-hidden />
       <p
         className="w-full pt-[3%] text-center font-mono text-[clamp(5.5px,2.6cqw,9px)] leading-tight tracking-[0.12em] uppercase opacity-40"

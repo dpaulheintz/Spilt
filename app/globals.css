@@ -2,41 +2,23 @@
 
 /* ─── Spilt Social brand tokens ─────────────────────────────────── */
 :root {
-  /* core brand */
-  --champagne: #c69d60;
+  --cream: #faf6ee;
+  --charcoal: #2a2620;
+  --gold: #c69d60;
   --gold-hi: #e8c687;
-  --ink: #0b0a08;
-  --ivory: #f2ede3;
-  --cobalt: #16276b;
-  --cream: #f5e1c4;
-
-  /* concept-specific extensions */
-  --cobalt-deep: #0e1b4d;
-  --paper: #f4efe4;
-  --carbon: #1e1b16;
-  --brick: #a34a2e;
-  --slate: #3f5877;
-  --ochre: #c08a3e;
-  --red-live: #c13b2a;
-  --teal-alt: #2a6b8a;
+  --navy: #1b1f3b;
+  --hairline: rgba(42, 38, 32, 0.14);
+  /* the one easing curve every DOM tween on the site uses */
+  --ease-spilt: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @theme inline {
-  --color-champagne: var(--champagne);
-  --color-gold-hi: var(--gold-hi);
-  --color-ink: var(--ink);
-  --color-ivory: var(--ivory);
-  --color-cobalt: var(--cobalt);
   --color-cream: var(--cream);
-  --color-cobalt-deep: var(--cobalt-deep);
-  --color-paper: var(--paper);
-  --color-carbon: var(--carbon);
-  --color-brick: var(--brick);
-  --color-slate: var(--slate);
-  --color-ochre: var(--ochre);
-  --color-red-live: var(--red-live);
-  --color-teal-alt: var(--teal-alt);
-  --font-sans: var(--font-geist-sans);
+  --color-charcoal: var(--charcoal);
+  --color-gold: var(--gold);
+  --color-gold-hi: var(--gold-hi);
+  --color-navy: var(--navy);
+  --font-sans: var(--font-body);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -46,40 +28,25 @@ body {
 }
 
 body {
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif;
+  background-color: var(--cream);
+  color: var(--charcoal);
   -webkit-font-smoothing: antialiased;
 }
 
-/* concept display faces (set per-page via next/font variables) */
-.font-pixel {
-  font-family: var(--font-pixel), "Courier New", monospace;
-}
-.font-italiana {
-  font-family: var(--font-italiana), Georgia, serif;
-}
-.font-toile-display {
-  font-family: var(--font-toile-display), Georgia, serif;
-}
-.font-toile-body {
-  font-family: var(--font-toile-body), var(--font-geist-sans), sans-serif;
-}
-
-/* ── /passport + /partner: production brand system ─────────── */
+/* ── brand type system ──────────────────────────────────────── */
 .font-heading {
   font-family: var(--font-heading), Georgia, serif;
 }
 .font-heading-xl {
   font-family: var(--font-heading-xl), var(--font-heading), Georgia, serif;
 }
-/* body/UI — resolves to the --font-body stand-in (see fonts.ts) */
+/* body/UI — resolves to the --font-body stand-in (see components/passport/fonts.ts) */
 .font-body {
   font-family: var(--font-body), system-ui, sans-serif;
 }
-/* legacy alias kept so nothing breaks mid-migration */
-.font-passport {
-  font-family: var(--font-body), system-ui, sans-serif;
-}
-/* sponsor marquee — duplicated track scrolls right, seamless */
+
+/* ── sponsor marquee — duplicated track scrolls right, seamless ── */
 .sponsor-marquee {
   animation: sponsor-scroll 35s linear infinite;
 }
@@ -94,6 +61,8 @@ body {
     transform: translateX(0);
   }
 }
+
+/* ── stamp press-in ─────────────────────────────────────────── */
 @keyframes passport-press {
   from {
     transform: scale(1.2);
@@ -103,275 +72,6 @@ body {
     transform: scale(1);
     opacity: 1;
   }
-}
-
-/* ── /still: candlelit vanitas table ───────────────────────── */
-.font-still {
-  font-family: var(--font-still-display), Georgia, serif;
-}
-.still-caps {
-  font-family: var(--font-still-display), Georgia, serif;
-  font-size: 12px;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  font-variant: small-caps;
-}
-/* CRITICAL: blend + filter + motion all live on the <img> itself.
-   Any filter/transform on an ancestor creates a stacking context and
-   isolates mix-blend-mode — the black rectangles come back. */
-.still-obj .still-img {
-  mix-blend-mode: lighten;
-  /* contrast crushes the near-black art backgrounds to true black
-     so no rectangle edges survive the lighten composite */
-  filter: brightness(var(--obj-bright, 0.82)) contrast(1.15);
-  scale: var(--obj-scale, 1);
-  translate: var(--plx, 0px) var(--ply, 0px);
-  position: relative;
-  top: 0;
-  transition: top 400ms var(--ease-spilt);
-  will-change: filter, scale, translate;
-}
-.still-obj:hover .still-img,
-.still-obj:focus .still-img,
-.still-obj:focus-visible .still-img {
-  top: -6px;
-  --obj-bright: 1.12;
-  --obj-scale: 1.03;
-}
-.still-label {
-  opacity: 0;
-  margin-top: 2px;
-  transition: opacity 300ms var(--ease-spilt);
-}
-.still-obj:hover .still-label,
-.still-obj:focus .still-label,
-.still-obj:focus-visible .still-label {
-  opacity: 1;
-}
-.still-label-mobile {
-  opacity: 0.7;
-}
-.still-label-rule {
-  height: 1px;
-  margin-top: 6px;
-  background-color: #c69d60;
-  transform: scaleX(0);
-  transform-origin: center;
-  transition: transform 300ms var(--ease-spilt);
-}
-.still-obj:hover .still-label-rule,
-.still-obj:focus .still-label-rule,
-.still-obj:focus-visible .still-label-rule {
-  transform: scaleX(1);
-}
-
-/* idle micro-motion — subtle, staggered, slow */
-.still-anim-rock {
-  animation: still-rock 7s ease-in-out infinite;
-}
-@keyframes still-rock {
-  0%,
-  100% {
-    rotate: -1.2deg;
-  }
-  50% {
-    rotate: 1.2deg;
-  }
-}
-.still-anim-breathe {
-  animation: still-breathe 6s ease-in-out 1.5s infinite;
-}
-@keyframes still-breathe {
-  0%,
-  100% {
-    scale: var(--obj-scale, 1);
-  }
-  50% {
-    scale: calc(var(--obj-scale, 1) * 1.012);
-  }
-}
-.still-bell-swing {
-  animation: still-swing 0.9s var(--ease-spilt);
-  transform-origin: top center;
-}
-@keyframes still-swing {
-  0% {
-    rotate: 0deg;
-  }
-  25% {
-    rotate: 7deg;
-  }
-  55% {
-    rotate: -5deg;
-  }
-  80% {
-    rotate: 2deg;
-  }
-  100% {
-    rotate: 0deg;
-  }
-}
-/* specular sweeps: coupe shimmer (continuous) + key glint (~9s) */
-.still-sweep {
-  position: absolute;
-  inset: 0;
-  mix-blend-mode: lighten;
-  pointer-events: none;
-  translate: var(--plx, 0px) var(--ply, 0px);
-  background: linear-gradient(
-    105deg,
-    transparent 42%,
-    rgba(232, 198, 135, 0.16) 50%,
-    transparent 58%
-  );
-  background-size: 300% 100%;
-}
-.still-sweep-shimmer {
-  animation: still-sweep-move 8s ease-in-out infinite;
-}
-.still-sweep-glint {
-  animation: still-sweep-move 9s ease-in-out infinite;
-  animation-timing-function: cubic-bezier(0.7, 0, 0.3, 1);
-}
-@keyframes still-sweep-move {
-  0%,
-  55% {
-    background-position: 120% 0;
-  }
-  70%,
-  100% {
-    background-position: -60% 0;
-  }
-}
-.still-obj {
-  position: relative;
-}
-.still-obj .still-obj-img {
-  position: relative;
-  display: block;
-}
-/* panel rise */
-.still-panel {
-  animation: still-panel-in 600ms var(--ease-spilt);
-}
-.still-panel-body {
-  animation: still-panel-rise 600ms var(--ease-spilt);
-}
-@keyframes still-panel-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@keyframes still-panel-rise {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ── /dither: display face, ticker marquee, outline type ───── */
-.font-dither {
-  font-family: var(--font-dither-display), Impact, sans-serif;
-}
-.dither-marquee {
-  animation: dither-scroll 28s linear infinite;
-}
-@keyframes dither-scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-/* cream fill + cobalt outline: stays readable crossing the image */
-.dither-outline {
-  -webkit-text-stroke: 3px #16276b;
-  paint-order: stroke fill;
-  text-shadow: none;
-}
-@media (max-width: 640px) {
-  .dither-outline {
-    -webkit-text-stroke-width: 2px;
-  }
-}
-/* hollow outline type for SPRING 2026 */
-.dither-outline-only {
-  color: transparent;
-  -webkit-text-stroke: 3px #16276b;
-}
-@media (max-width: 640px) {
-  .dither-outline-only {
-    -webkit-text-stroke-width: 2px;
-  }
-}
-
-/* ── /fieldnotes: typewriter face, paper fiber, ruled lines ── */
-.font-typer {
-  font-family: var(--font-typer), "Courier New", monospace;
-}
-.fieldnotes-paper {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.42 0 0 0 0 0.36 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-.fieldnotes-ruled {
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent 47px,
-    rgba(30, 27, 22, 0.14) 47px,
-    rgba(30, 27, 22, 0.14) 48px
-  );
-}
-.fieldnotes-cursor {
-  display: inline-block;
-  margin-left: 1px;
-  animation: fieldnotes-blink 1s step-end infinite;
-}
-@keyframes fieldnotes-blink {
-  50% {
-    opacity: 0;
-  }
-}
-
-/* ── /toile: engraved plate rules + hero rise ─────────────── */
-.toile-rule {
-  background-color: #16276b;
-}
-.toile-rule-ink {
-  background-color: #16276b;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 500ms var(--ease-spilt);
-}
-.plate:hover .toile-rule-ink,
-.plate:focus-within .toile-rule-ink {
-  transform: scaleX(1);
-}
-.plate:hover .coupe-fill,
-.plate:focus-within .coupe-fill {
-  transform: scaleY(1) !important;
-}
-@keyframes toile-rise {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* shared easing token — every concept uses this curve for DOM tweens */
-:root {
-  --ease-spilt: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {

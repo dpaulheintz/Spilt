@@ -1,13 +1,11 @@
 {
-  "name": "spilt-concepts",
+  "name": "spilt-social",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "dither": "node scripts/dither.mjs",
-    "dither:test": "node scripts/dither.mjs --test",
     "fetch:events": "node scripts/fetch-posh.mjs"
   },
   "dependencies": {
@@ -15,8 +13,7 @@
     "next": "15.5.23",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "server-only": "^0.0.1",
-    "sharp": "^0.35.3"
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

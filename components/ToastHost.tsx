@@ -3,8 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Generic toast surface. Each concept page mounts one and styles it
- * via className so the toast always matches the concept's aesthetic.
+ * Toast surface. Each page mounts one and styles it via className.
  */
 export default function ToastHost({ className }: { className: string }) {
   const [msg, setMsg] = useState<string | null>(null);

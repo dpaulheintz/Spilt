@@ -1,22 +1,31 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import ConceptShell from "@/components/ConceptShell";
+import { Geist_Mono } from "next/font/google";
+import { passportFontVars } from "@/components/passport/fonts";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
+/* document mono — MRZ line, passport dates/times, stamp text only */
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
+/* absolute base for OG/social image URLs: explicit override, else the
+   Vercel production domain, else local dev */
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");
+
 export const metadata: Metadata = {
-  title: "Spilt Social — Concepts",
+  metadataBase: new URL(siteUrl),
+  title: "Spilt Social — Fill your cup.",
   description:
-    "Four landing page design directions for Spilt Social, a private social club in Columbus, Ohio.",
+    "Spilt Social's experiences connect Columbus's most driven people — founders, operators, mentors, and the occasional gym buddy.",
+  openGraph: {
+    title: "Spilt Social — Fill your cup.",
+    images: ["/assets/passport/hero-poster.jpg"],
+  },
 };
 
 export default function RootLayout({
@@ -26,9 +35,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={`${passportFontVars} ${geistMono.variable}`}>
         {children}
-        <ConceptShell />
       </body>
     </html>
   );

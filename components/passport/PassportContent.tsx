@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { BRAND } from "@/lib/brand";
 import type { SpiltEvent } from "@/lib/events";
 import {
   FORMATS,
@@ -31,7 +30,7 @@ const STORAGE_KEY = "spilt-passport-stamps";
 
 function fakeClick(e: React.MouseEvent) {
   e.preventDefault();
-  toast();
+  toast("Coming soon.");
 }
 
 function GoldLink({
@@ -392,7 +391,7 @@ export default function PassportContent({
             [
               ["Club", ["About", "The experiences", "House rules", "Careers"]],
               ["Membership", ["Apply", "Benefits", "FAQs", "Gift membership"]],
-              ["Contact", [BRAND.contact, "Press", "Partnerships"]],
+              ["Contact", ["business@spiltsocial.com", "Press", "Partnerships"]],
               ["Follow", ["Instagram", "X", "LinkedIn"]],
             ] as [string, string[]][]
           ).map(([title, links]) => (
@@ -433,7 +432,7 @@ export default function PassportContent({
           className="mx-auto max-w-7xl border-t px-6 py-6 pb-24 text-[12px] opacity-60"
           style={{ borderColor: HAIRLINE }}
         >
-          © 2026 Spilt Social · Concept 6 of 6
+          © 2026 Spilt Social
         </div>
       </footer>
 

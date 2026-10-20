@@ -61,7 +61,7 @@ export async function GET(request: Request) {
       store = "local-fs";
     }
 
-    revalidatePath("/passport");
+    revalidatePath("/");
     return NextResponse.json({ ok: true, strategy, count: events.length, store });
   } catch (err) {
     // last good data is preserved by construction — nothing was written

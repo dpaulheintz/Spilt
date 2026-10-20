@@ -121,14 +121,14 @@ export default function PartnerContent() {
       <header className="sticky top-0 z-40 border-b" style={{ backgroundColor: CREAM, borderColor: HAIRLINE }}>
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <Link
-            href="/passport"
+            href="/"
             className="font-heading cursor-pointer text-[17px] tracking-[0.16em] focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ color: CHARCOAL, outlineColor: GOLD }}
           >
             SPILT SOCIAL
           </Link>
           <Link
-            href="/passport"
+            href="/"
             className="cursor-pointer text-[13px] transition-opacity hover:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ color: CHARCOAL, outlineColor: GOLD }}
           >

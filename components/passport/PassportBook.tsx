@@ -428,8 +428,7 @@ function MobileBook({
     const g = gesture.current;
 
     const onStart = (e: TouchEvent) => {
-      // gestures on the book never reach window-level listeners
-      // (the concept switcher's swipe handler in particular)
+      // book gestures never bubble to window-level touch listeners
       e.stopPropagation();
       if (animating.current) return;
       g.active = true;
@@ -495,7 +494,7 @@ function MobileBook({
     };
   }, [N, commit, revert, reduced]);
 
-  /* arrow keys while in view + concept-switcher swipe guard */
+  /* arrow keys while the book is in view */
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
@@ -503,8 +502,6 @@ function MobileBook({
     const io = new IntersectionObserver(
       ([e]) => {
         inView = e.isIntersecting && e.intersectionRatio > 0.3;
-        if (inView) document.body.dataset.spiltBookNav = "1";
-        else delete document.body.dataset.spiltBookNav;
       },
       { threshold: [0, 0.3, 0.6] }
     );
@@ -524,7 +521,6 @@ function MobileBook({
     window.addEventListener("keydown", onKey);
     return () => {
       io.disconnect();
-      delete document.body.dataset.spiltBookNav;
       window.removeEventListener("keydown", onKey);
     };
   }, [step]);
@@ -864,8 +860,7 @@ export default function PassportBook({
     };
   }, [S, reduced, isMobile, events, onSpreadViewed, progressFromScroll, scrollToProgress]);
 
-  /* keyboard + swipe while the book is in view; flag off the concept
-     switcher's own arrow/swipe handlers via a body dataset marker */
+  /* keyboard + swipe while the book is in view */
   useEffect(() => {
     if (isMobile) return; // MobileBook owns its own gestures + keys
     const outer = outerRef.current;
@@ -874,8 +869,6 @@ export default function PassportBook({
     const io = new IntersectionObserver(
       ([e]) => {
         inView = e.isIntersecting && e.intersectionRatio > 0.05;
-        if (inView) document.body.dataset.spiltBookNav = "1";
-        else delete document.body.dataset.spiltBookNav;
       },
       { threshold: [0, 0.05, 0.5] }
     );
@@ -915,7 +908,6 @@ export default function PassportBook({
     window.addEventListener("touchend", onTouchEnd, { passive: true });
     return () => {
       io.disconnect();
-      delete document.body.dataset.spiltBookNav;
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchend", onTouchEnd);

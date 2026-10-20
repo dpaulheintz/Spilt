@@ -77,7 +77,7 @@ export function Stamp({
           textAnchor="middle"
           fill={def.ink}
           style={{
-            font: "700 11px var(--font-passport), sans-serif",
+            font: "700 11px var(--font-geist-mono), monospace",
             letterSpacing: "0.12em",
           }}
         >
@@ -92,7 +92,7 @@ export function Stamp({
             textAnchor="middle"
             fill={def.ink}
             style={{
-              font: "700 11px var(--font-passport), sans-serif",
+              font: "700 11px var(--font-geist-mono), monospace",
               letterSpacing: "0.12em",
             }}
           >

@@ -1,12 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import type { Copy } from "@/lib/content-store";
 import type { SpiltEvent } from "@/lib/events";
+import type { ShopData } from "@/lib/shop-types";
 import {
   FORMATS,
-  POSH_GROUP_URL,
-  TAPT_URL,
   ctaForFormat,
+  formatCopy,
+  formatName,
+  formatPhoto,
   type FormatSlug,
 } from "@/lib/formats";
 import { toast } from "@/lib/toast";
@@ -16,6 +20,8 @@ import Sticker from "./Sticker";
 import PassportNav from "./PassportNav";
 import PassportBook from "./PassportBook";
 import SponsorMarquee from "./SponsorMarquee";
+import ShopSection from "./ShopSection";
+import SocialIcon, { SOCIAL_NAMES, SOCIAL_ORDER } from "./SocialIcon";
 
 /* Spilt's production palette */
 const CREAM = "#FAF6EE";
@@ -25,13 +31,7 @@ const GOLD = "#C69D60";
 const GOLD_HI = "#E8C687";
 const HAIRLINE = "rgba(42, 38, 32, 0.14)";
 
-const MRZ = "P<USA<SPILT<SOCIAL<<COLUMBUS<OH<EST2023<<<<<<<";
 const STORAGE_KEY = "spilt-passport-stamps";
-
-function fakeClick(e: React.MouseEvent) {
-  e.preventDefault();
-  toast("Coming soon.");
-}
 
 function GoldLink({
   href,
@@ -49,7 +49,7 @@ function GoldLink({
       href={href}
       target={newTab ? "_blank" : undefined}
       rel={newTab ? "noopener noreferrer" : undefined}
-      className={`inline-block cursor-pointer px-6 py-3 text-[13px] font-medium tracking-[0.05em] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 ${className ?? ""}`}
+      className={`inline-flex min-h-[44px] cursor-pointer items-center px-6 py-3 text-[13px] font-medium tracking-[0.05em] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 ${className ?? ""}`}
       style={{ backgroundColor: GOLD, color: CHARCOAL, outlineColor: CHARCOAL }}
       onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = GOLD_HI)}
       onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = GOLD)}
@@ -59,12 +59,19 @@ function GoldLink({
   );
 }
 
+const footerLink =
+  "cursor-pointer opacity-80 transition-opacity hover:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2";
+
 export default function PassportContent({
+  copy,
   events,
   sponsorLogos,
+  shop,
 }: {
+  copy: Copy;
   events: SpiltEvent[];
   sponsorLogos: string[];
+  shop: ShopData;
 }) {
   const [earned, setEarned] = useState<Set<string>>(new Set());
   const [loaded, setLoaded] = useState(false);
@@ -84,6 +91,9 @@ export default function PassportContent({
   const formatRefs = useRef<Record<string, HTMLElement | null>>({});
   const earnedRef = useRef(earned);
   earnedRef.current = earned;
+
+  const applyUrl = copy.hero.ctaUrl;
+  const showShop = copy.shop.visible !== "false";
 
   useEffect(() => {
     setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -191,7 +201,7 @@ export default function PassportContent({
       className="font-body min-h-dvh"
       style={{ backgroundColor: CREAM, color: CHARCOAL }}
     >
-      <PassportNav />
+      <PassportNav copy={copy} />
 
       {/* ── hero ──────────────────────────────────────────── */}
       <section
@@ -200,8 +210,8 @@ export default function PassportContent({
       >
         <video
           className="absolute inset-0 h-full w-full object-cover"
-          src="/assets/passport/hero.mp4"
-          poster="/assets/passport/hero-poster.jpg"
+          src={copy.hero.video}
+          poster={copy.hero.poster}
           autoPlay={!reduced}
           muted
           loop
@@ -216,10 +226,10 @@ export default function PassportContent({
         <div className="absolute right-0 bottom-0 left-0 flex flex-col gap-5 p-6 pb-28 sm:flex-row sm:items-end sm:justify-between sm:p-10 sm:pb-28">
           <div>
             <h1 className="font-heading-xl max-w-2xl text-4xl leading-tight text-white sm:text-6xl">
-              Fill your cup
+              {copy.hero.headline}
             </h1>
             <div className="mt-7">
-              <GoldLink href={POSH_GROUP_URL}>Apply for membership</GoldLink>
+              <GoldLink href={applyUrl}>{copy.hero.ctaLabel}</GoldLink>
             </div>
           </div>
           <p
@@ -227,7 +237,7 @@ export default function PassportContent({
             style={{ opacity: 0.4 }}
             aria-hidden
           >
-            {MRZ}
+            {copy.hero.mrz}
           </p>
         </div>
       </section>
@@ -239,35 +249,42 @@ export default function PassportContent({
         className="mx-auto max-w-3xl px-6 pt-24 pb-20 text-center sm:pt-32 sm:pb-24"
       >
         <h2 className="font-heading text-4xl leading-snug sm:text-5xl">
-          Find your people
+          {copy.manifesto.heading}
         </h2>
         <p className="mx-auto mt-7 max-w-[640px] text-[16px] leading-relaxed opacity-80">
-          Whether that means your next new hire, lifelong mentor, or even a gym
-          buddy, our experiences connect like-minded people to help everyone
-          level up.
+          {copy.manifesto.blurb}
         </p>
         <div className="mt-10">
-          <GoldLink href={POSH_GROUP_URL}>Apply</GoldLink>
+          <GoldLink href={applyUrl}>{copy.manifesto.ctaLabel}</GoldLink>
         </div>
       </section>
 
       {/* ── sponsors ──────────────────────────────────────── */}
-      <SponsorMarquee logos={sponsorLogos} />
+      <SponsorMarquee logos={sponsorLogos} label={copy.sponsors.label} />
 
       {/* ── the passport book (events) ────────────────────── */}
-      <PassportBook events={events} earned={earned} onSpreadViewed={onSpreadViewed} />
+      <PassportBook
+        copy={{ ...copy.passport, mrz: copy.hero.mrz }}
+        events={events}
+        earned={earned}
+        onSpreadViewed={onSpreadViewed}
+      />
 
       {/* ── the experiences ───────────────────────────────── */}
       <section className="mx-auto max-w-6xl px-6 py-24 sm:py-28">
         <h2 className="font-heading mb-14 text-4xl sm:text-5xl">
-          The experiences.
+          {copy.experiences.heading}
         </h2>
         <div className="flex flex-col gap-16 sm:gap-20">
           {FORMATS.map((f, i) => {
             const isTapt = f.slug === "tapt";
             const ev = eventForFormat(f.slug);
-            const href = isTapt ? TAPT_URL : (ev?.poshUrl ?? POSH_GROUP_URL);
+            const href = isTapt
+              ? copy.experiences.taptUrl
+              : (ev?.poshUrl ?? copy.socials.posh);
             const cta = ctaForFormat(f.slug);
+            const name = formatName(copy, f.slug);
+            const photo = formatPhoto(copy, f.slug);
             return (
               <article
                 key={f.slug}
@@ -288,8 +305,6 @@ export default function PassportContent({
                     : undefined
                 }
               >
-                {/* photo placeholder — real photo drops in at
-                    /public/assets/passport/formats/<slug>.jpg */}
                 <div className="lg:w-1/2">
                   <div
                     className="relative flex aspect-[4/3] items-center justify-center overflow-hidden border"
@@ -298,29 +313,35 @@ export default function PassportContent({
                       backgroundColor: isTapt ? "#232845" : "#FFFDF8",
                     }}
                   >
-                    <span
-                      aria-hidden
-                      className="font-heading text-[11cqw] whitespace-nowrap opacity-[0.07] lg:text-6xl"
-                      style={{ color: isTapt ? CREAM : CHARCOAL }}
-                    >
-                      {isTapt ? "?" : f.name}
-                    </span>
+                    {photo ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={photo}
+                        alt={name}
+                        loading="lazy"
+                        className="absolute inset-0 h-full w-full object-cover"
+                      />
+                    ) : (
+                      /* styled placeholder until a photo is set in the
+                         content model (experiences.<format>Photo) */
+                      <span
+                        aria-hidden
+                        className="font-heading text-[11cqw] whitespace-nowrap opacity-[0.07] lg:text-6xl"
+                        style={{ color: isTapt ? CREAM : CHARCOAL }}
+                      >
+                        {isTapt ? "?" : name}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="lg:w-1/2 lg:px-6">
-                  <Sticker
-                    format={f.slug}
-                    width={150}
-                    rotation={i % 2 === 1 ? 3 : -3}
-                  />
-                  <h3 className="font-heading mt-6 text-3xl sm:text-4xl">
-                    {f.name}
-                  </h3>
+                  <Sticker format={f.slug} width={150} rotation={i % 2 === 1 ? 3 : -3} />
+                  <h3 className="font-heading mt-6 text-3xl sm:text-4xl">{name}</h3>
                   <p
                     className="mt-4 max-w-lg text-[15px] leading-relaxed"
                     style={{ opacity: isTapt ? 0.85 : 0.8 }}
                   >
-                    {f.copy}
+                    {formatCopy(copy, f.slug)}
                   </p>
                   <div className="mt-7">
                     <GoldLink href={href}>{cta.label}</GoldLink>
@@ -332,19 +353,16 @@ export default function PassportContent({
         </div>
       </section>
 
+      {/* ── the shop ──────────────────────────────────────── */}
+      {showShop && <ShopSection copy={copy.shop} shop={shop} />}
+
       {/* ── subscribe ─────────────────────────────────────── */}
-      <section
-        id="subscribe"
-        className="border-t"
-        style={{ borderColor: HAIRLINE }}
-      >
+      <section id="subscribe" className="border-t" style={{ borderColor: HAIRLINE }}>
         <div className="mx-auto max-w-2xl px-6 py-24 text-center">
-          <h2 className="font-heading text-3xl sm:text-4xl">
-            Hear about events first.
-          </h2>
+          <h2 className="font-heading text-3xl sm:text-4xl">{copy.subscribe.heading}</h2>
           {subscribed ? (
             <p aria-live="polite" className="mt-8 text-lg" style={{ color: GOLD }}>
-              You&apos;re on the list.
+              {copy.subscribe.success}
             </p>
           ) : (
             <form
@@ -364,75 +382,118 @@ export default function PassportContent({
                 id="passport-email"
                 type="email"
                 required
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="w-full border bg-white px-4 py-3 text-[14px] placeholder:opacity-45 focus:outline-2 focus:outline-offset-1"
+                placeholder={copy.subscribe.placeholder}
+                className="w-full min-w-0 border bg-white px-4 py-3 text-[14px] placeholder:opacity-45 focus:outline-2 focus:outline-offset-1"
                 style={{ borderColor: HAIRLINE, color: CHARCOAL, outlineColor: GOLD }}
               />
               <button
                 type="submit"
-                className="shrink-0 cursor-pointer px-6 py-3 text-[13px] font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="min-h-[44px] shrink-0 cursor-pointer px-6 py-3 text-[13px] font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={{ backgroundColor: GOLD, color: CHARCOAL, outlineColor: CHARCOAL }}
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = GOLD_HI)}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = GOLD)}
               >
-                Subscribe
+                {copy.subscribe.buttonLabel}
               </button>
             </form>
           )}
         </div>
       </section>
 
-      {/* ── footer ────────────────────────────────────────── */}
+      {/* ── footer: real destinations only ────────────────── */}
       <footer className="border-t" style={{ borderColor: HAIRLINE, backgroundColor: "#F4EEE2" }}>
         <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 sm:grid-cols-2 lg:grid-cols-4">
-          {(
-            [
-              ["Club", ["About", "The experiences", "House rules", "Careers"]],
-              ["Membership", ["Apply", "Benefits", "FAQs", "Gift membership"]],
-              ["Contact", ["business@spiltsocial.com", "Press", "Partnerships"]],
-              ["Follow", ["Instagram", "X", "LinkedIn"]],
-            ] as [string, string[]][]
-          ).map(([title, links]) => (
-            <div key={title}>
-              <p className="mb-4 text-[12px] font-semibold tracking-[0.2em] uppercase opacity-70">
-                {title}
-              </p>
-              <ul className="space-y-2.5 text-[14px]">
-                {links.map((l) => (
-                  <li key={l}>
-                    {l.includes("@") ? (
-                      <span className="opacity-80">{l}</span>
-                    ) : l === "Partnerships" ? (
-                      <a
-                        href="/partner"
-                        className="cursor-pointer opacity-80 transition-opacity hover:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2"
-                        style={{ outlineColor: GOLD }}
-                      >
-                        {l}
-                      </a>
-                    ) : (
-                      <a
-                        href="#"
-                        onClick={fakeClick}
-                        className="cursor-pointer opacity-80 transition-opacity hover:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2"
-                        style={{ outlineColor: GOLD }}
-                      >
-                        {l}
-                      </a>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div>
+            <p className="mb-4 text-[12px] font-semibold tracking-[0.2em] uppercase opacity-70">
+              Experiences
+            </p>
+            <ul className="space-y-2.5 text-[14px]">
+              {FORMATS.map((f) => (
+                <li key={f.slug}>
+                  <a href={`#${f.slug}`} className={footerLink} style={{ outlineColor: GOLD }}>
+                    {formatName(copy, f.slug)}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="mb-4 text-[12px] font-semibold tracking-[0.2em] uppercase opacity-70">
+              The club
+            </p>
+            <ul className="space-y-2.5 text-[14px]">
+              <li>
+                <a href="#events" className={footerLink} style={{ outlineColor: GOLD }}>
+                  Upcoming events
+                </a>
+              </li>
+              {showShop && (
+                <li>
+                  <a href="#shop" className={footerLink} style={{ outlineColor: GOLD }}>
+                    Shop
+                  </a>
+                </li>
+              )}
+              <li>
+                <Link href="/partner" className={footerLink} style={{ outlineColor: GOLD }}>
+                  {copy.nav.partnerButton}
+                </Link>
+              </li>
+              <li>
+                <a
+                  href={applyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={footerLink}
+                  style={{ outlineColor: GOLD }}
+                >
+                  Apply for membership
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <p className="mb-4 text-[12px] font-semibold tracking-[0.2em] uppercase opacity-70">
+              Contact
+            </p>
+            <a
+              href={`mailto:${copy.footer.contactEmail}`}
+              className={`${footerLink} text-[14px] break-all`}
+              style={{ outlineColor: GOLD }}
+            >
+              {copy.footer.contactEmail}
+            </a>
+          </div>
+          <div>
+            <p className="mb-4 text-[12px] font-semibold tracking-[0.2em] uppercase opacity-70">
+              Follow
+            </p>
+            <ul className="space-y-2.5 text-[14px]">
+              {SOCIAL_ORDER.filter((k) => copy.socials[k]).map((k) => (
+                <li key={k}>
+                  <a
+                    href={copy.socials[k]}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`${footerLink} inline-flex items-center gap-2.5`}
+                    style={{ outlineColor: GOLD }}
+                  >
+                    <SocialIcon name={k} size={16} />
+                    {SOCIAL_NAMES[k]}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
         <div
           className="mx-auto max-w-7xl border-t px-6 py-6 pb-24 text-[12px] opacity-60"
           style={{ borderColor: HAIRLINE }}
         >
-          © 2026 Spilt Social
+          {copy.footer.copyright}
         </div>
       </footer>
 
@@ -448,7 +509,7 @@ export default function PassportContent({
         <span
           className="block h-14 w-11 rounded-[3px] bg-cover bg-top"
           style={{
-            backgroundImage: "url(/assets/passport/cover.png)",
+            backgroundImage: `url(${copy.passport.cover})`,
             boxShadow: "0 6px 18px rgba(42,38,32,0.28)",
           }}
         />
@@ -473,9 +534,7 @@ export default function PassportContent({
                 ? "transform 550ms var(--ease-spilt), opacity 550ms var(--ease-spilt)"
                 : undefined,
             animation:
-              fly.phase === "press"
-                ? "passport-press 180ms var(--ease-spilt)"
-                : undefined,
+              fly.phase === "press" ? "passport-press 180ms var(--ease-spilt)" : undefined,
             ...flyTransform(),
           }}
         >
@@ -508,7 +567,7 @@ export default function PassportContent({
               autoFocus
               onClick={() => setModalOpen(false)}
               aria-label="Close passport"
-              className="absolute top-3 right-3 z-10 flex h-9 w-9 cursor-pointer items-center justify-center text-xl focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="absolute top-3 right-3 z-10 flex h-11 w-11 cursor-pointer items-center justify-center text-xl focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{ color: CHARCOAL, outlineColor: GOLD }}
             >
               ×
@@ -558,10 +617,10 @@ export default function PassportContent({
             {complete && (
               <div className="flex items-center justify-center gap-5 px-6 pb-8">
                 <p className="text-[15px] font-medium" style={{ color: GOLD }}>
-                  Frequent flyer. Apply.
+                  {copy.passport.completeMessage}
                 </p>
-                <GoldLink href={POSH_GROUP_URL} className="!px-5 !py-2.5">
-                  Apply
+                <GoldLink href={applyUrl} className="!px-5 !py-2.5">
+                  {copy.manifesto.ctaLabel}
                 </GoldLink>
               </div>
             )}

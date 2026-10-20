@@ -1,9 +1,13 @@
 import { readdir } from "node:fs/promises";
 import path from "node:path";
 import PassportContent from "@/components/passport/PassportContent";
+import { getCopy } from "@/lib/content-store";
 import { loadEvents } from "@/lib/events";
+import { getShop } from "@/lib/square";
 
-export const revalidate = 3600; // ISR — also revalidated by /api/refresh-events
+/* ISR: 10 minutes, matching the Square catalog cache. Also revalidated
+   on demand by /api/refresh-events after the nightly Posh sync. */
+export const revalidate = 600;
 
 /** build-time glob of sponsor logo tiles */
 async function loadSponsorLogos(): Promise<string[]> {
@@ -18,9 +22,13 @@ async function loadSponsorLogos(): Promise<string[]> {
 }
 
 export default async function HomePage() {
-  const [events, sponsorLogos] = await Promise.all([
+  const [copy, events, sponsorLogos, shop] = await Promise.all([
+    getCopy(),
     loadEvents(),
     loadSponsorLogos(),
+    getShop(),
   ]);
-  return <PassportContent events={events} sponsorLogos={sponsorLogos} />;
+  return (
+    <PassportContent copy={copy} events={events} sponsorLogos={sponsorLogos} shop={shop} />
+  );
 }

@@ -1,5 +1,9 @@
+import type { Copy } from "./content-store";
+
 /** Spilt Social event formats — shared by the passport book, the
- *  experiences section, the partner form, and event classification. */
+ *  experiences section, the partner form, and event classification.
+ *  Names and descriptions are editable content (content/defaults.json,
+ *  section "experiences"); structure and ink colors live here. */
 
 export type FormatSlug =
   | "move-and-mingle"
@@ -10,11 +14,9 @@ export type FormatSlug =
   | "other";
 
 export type Format = {
-  slug: FormatSlug;
-  name: string;
+  slug: Exclude<FormatSlug, "other">;
   ink: string;
   cta: "buy" | "apply";
-  copy: string;
 };
 
 export const FORMAT_INKS: Record<FormatSlug, string> = {
@@ -27,45 +29,29 @@ export const FORMAT_INKS: Record<FormatSlug, string> = {
 };
 
 export const FORMATS: Format[] = [
-  {
-    slug: "move-and-mingle",
-    name: "Move & Mingle",
-    ink: FORMAT_INKS["move-and-mingle"],
-    cta: "buy",
-    copy: "Sweat first, socialize second. A free-flowing workout and social at spots like Bridge Park — meet your next gym buddy, cofounder, or both, at resting heart rate and then well above it.",
-  },
-  {
-    slug: "move-fest",
-    name: "Move Fest",
-    ink: FORMAT_INKS["move-fest"],
-    cta: "buy",
-    copy: "Our biggest day of the year. Movement, music, and community taking over Huntington Park — part festival, part group workout, all Columbus.",
-  },
-  {
-    slug: "business-hop",
-    name: "Business Hop",
-    ink: FORMAT_INKS["business-hop"],
-    cta: "apply",
-    copy: "The signature. A curated mentorship crawl across the city's most distinguished venues — dozens of Columbus's sharpest mentors and operators, now hopping through Cleveland and Cincinnati too.",
-  },
-  {
-    slug: "founders-fair",
-    name: "Founders Fair",
-    ink: FORMAT_INKS["founders-fair"],
-    cta: "apply",
-    copy: "100 student founders. Top investors and operators. One day at The Loom built around real feedback, real connections, and real chances.",
-  },
-  {
-    slug: "tapt",
-    name: "Tapt",
-    ink: FORMAT_INKS.tapt,
-    cta: "apply",
-    copy: "A curated community for meaningful connections. That's all we can say for now — the rest, you find out in the room.",
-  },
+  { slug: "move-and-mingle", ink: FORMAT_INKS["move-and-mingle"], cta: "buy" },
+  { slug: "move-fest", ink: FORMAT_INKS["move-fest"], cta: "buy" },
+  { slug: "business-hop", ink: FORMAT_INKS["business-hop"], cta: "apply" },
+  { slug: "founders-fair", ink: FORMAT_INKS["founders-fair"], cta: "apply" },
+  { slug: "tapt", ink: FORMAT_INKS.tapt, cta: "apply" },
 ];
 
-export const TAPT_URL = "https://posh.vip/e/tapt-social";
-export const POSH_GROUP_URL = "https://posh.vip/g/spilt-social-1";
+/** "move-and-mingle" → "moveAndMingle" (prefix for experiences.* keys) */
+export function formatKey(slug: FormatSlug): string {
+  return slug.replace(/-(\w)/g, (_, c: string) => c.toUpperCase());
+}
+
+export function formatName(copy: Copy, slug: FormatSlug): string {
+  return copy.experiences?.[`${formatKey(slug)}Name`] ?? slug;
+}
+
+export function formatCopy(copy: Copy, slug: FormatSlug): string {
+  return copy.experiences?.[`${formatKey(slug)}Copy`] ?? "";
+}
+
+export function formatPhoto(copy: Copy, slug: FormatSlug): string {
+  return copy.experiences?.[`${formatKey(slug)}Photo`] ?? "";
+}
 
 /** Classify an event title into a format by keywords. */
 export function classifyFormat(title: string): FormatSlug {

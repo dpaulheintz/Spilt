@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { FORMATS, type FormatSlug } from "@/lib/formats";
+import type { Copy } from "@/lib/content-store";
+import { FORMATS, formatName, type FormatSlug } from "@/lib/formats";
 import Sticker from "@/components/passport/Sticker";
 
 const CREAM = "#FAF6EE";
@@ -13,7 +14,9 @@ const HAIRLINE = "rgba(42, 38, 32, 0.14)";
 
 type FieldErrors = Partial<Record<"name" | "org" | "phone" | "email", string>>;
 
-export default function PartnerContent() {
+export default function PartnerContent({ copy }: { copy: Copy }) {
+  const t = copy.partner;
+  const contactEmail = copy.footer.contactEmail;
   const [name, setName] = useState("");
   const [org, setOrg] = useState("");
   const [phone, setPhone] = useState("");
@@ -67,7 +70,7 @@ export default function PartnerContent() {
       if (!res.ok) throw new Error(`status ${res.status}`);
       setReceived(true);
     } catch {
-      setServerError("Something went sideways — try again, or email business@spiltsocial.com.");
+      setServerError(`Something went sideways — try again, or email ${contactEmail}.`);
     } finally {
       setSubmitting(false);
     }
@@ -125,7 +128,7 @@ export default function PartnerContent() {
             className="font-heading cursor-pointer text-[17px] tracking-[0.16em] focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ color: CHARCOAL, outlineColor: GOLD }}
           >
-            SPILT SOCIAL
+            {copy.nav.wordmark}
           </Link>
           <Link
             href="/"
@@ -144,7 +147,7 @@ export default function PartnerContent() {
             aria-hidden
             className="absolute inset-0 opacity-45"
             style={{
-              backgroundImage: "url(/assets/passport/cover.png)",
+              backgroundImage: `url(${t.image})`,
               backgroundSize: "220%",
               backgroundPosition: "38% 22%",
             }}
@@ -156,12 +159,10 @@ export default function PartnerContent() {
           />
           <div className="relative flex h-full min-h-[420px] flex-col justify-end p-8 sm:p-12">
             <h1 className="font-heading-xl text-4xl leading-tight text-white sm:text-5xl">
-              Partner with Spilt Social.
+              {t.heading}
             </h1>
             <p className="mt-6 max-w-md text-[15px] leading-relaxed text-white/85">
-              Columbus&apos;s most connected room — founders, operators, and the
-              people betting on this city, gathered a hundred at a time. Put
-              your brand at the table where the next Columbus gets decided.
+              {t.blurb}
             </p>
           </div>
         </div>
@@ -180,17 +181,14 @@ export default function PartnerContent() {
                   animation: "passport-press 220ms var(--ease-spilt)",
                 }}
               >
-                Received
+                {t.successStamp}
               </span>
-              <p className="mt-6 text-lg">We&apos;ll be in touch.</p>
-              <p className="mt-2 text-[14px] opacity-70">
-                Expect a note from the team within a couple of days — decks and
-                dates included.
-              </p>
+              <p className="mt-6 text-lg">{t.successHeading}</p>
+              <p className="mt-2 text-[14px] opacity-70">{t.successBody}</p>
             </div>
           ) : (
             <form onSubmit={submit} noValidate className="flex flex-col gap-6">
-              <h2 className="font-heading text-2xl">Tell us who&apos;s asking.</h2>
+              <h2 className="font-heading text-2xl">{t.formHeading}</h2>
               {field("p-name", "Name", name, setName, errors.name, "text", "name")}
               {field("p-org", "Organization", org, setOrg, errors.org, "text", "organization")}
               {field("p-phone", "Phone", phone, setPhone, errors.phone, "tel", "tel")}
@@ -211,10 +209,10 @@ export default function PartnerContent() {
 
               <fieldset>
                 <legend className="mb-1 text-[12px] font-medium tracking-[0.14em] uppercase opacity-70">
-                  I&apos;m interested in:
+                  {t.interestsLabel}
                 </legend>
                 <p className="mb-3 text-[12px] opacity-55">
-                  Optional — we&apos;ll send the matching decks.
+                  {t.interestsHint}
                 </p>
                 <div className="flex flex-wrap gap-3">
                   {FORMATS.map((f) => {
@@ -242,7 +240,7 @@ export default function PartnerContent() {
                           }}
                           className="absolute inset-0 h-full w-full cursor-pointer appearance-none focus-visible:outline-2 focus-visible:outline-offset-2"
                           style={{ outlineColor: GOLD }}
-                          aria-label={f.name}
+                          aria-label={formatName(copy, f.slug)}
                         />
                         <Sticker
                           format={f.slug}
@@ -268,7 +266,7 @@ export default function PartnerContent() {
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = GOLD_HI)}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = GOLD)}
               >
-                {submitting ? "Sending…" : "Start the conversation"}
+                {submitting ? "Sending…" : t.submitLabel}
               </button>
             </form>
           )}
@@ -277,7 +275,7 @@ export default function PartnerContent() {
 
       <footer className="border-t" style={{ borderColor: HAIRLINE }}>
         <div className="mx-auto max-w-7xl px-6 py-6 pb-24 text-[12px] opacity-60">
-          © 2026 Spilt Social · business@spiltsocial.com
+          {copy.footer.copyright} · {contactEmail}
         </div>
       </footer>
     </div>

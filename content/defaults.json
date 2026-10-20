@@ -1,0 +1,158 @@
+{
+  "version": 1,
+  "sections": [
+    {
+      "key": "nav",
+      "page": "home",
+      "label": "Top navigation",
+      "fields": [
+        { "key": "wordmark", "label": "Wordmark", "type": "text", "value": "SPILT SOCIAL" },
+        { "key": "partnerButton", "label": "\"Become a Partner\" button", "type": "text", "value": "Become a Partner" }
+      ]
+    },
+    {
+      "key": "hero",
+      "page": "home",
+      "label": "Hero",
+      "fields": [
+        { "key": "headline", "label": "Hero headline", "type": "text", "value": "Fill your cup" },
+        { "key": "ctaLabel", "label": "Hero button text", "type": "text", "value": "Apply for membership" },
+        { "key": "ctaUrl", "label": "Hero button link", "type": "url", "value": "https://posh.vip/g/spilt-social-1" },
+        { "key": "mrz", "label": "Passport code line (bottom right)", "type": "text", "value": "P<USA<SPILT<SOCIAL<<COLUMBUS<OH<EST2023<<<<<<<" },
+        { "key": "video", "label": "Hero video", "type": "video", "value": "/assets/passport/hero.mp4" },
+        { "key": "poster", "label": "Hero video still (shows while the video loads)", "type": "image", "value": "/assets/passport/hero-poster.jpg" }
+      ]
+    },
+    {
+      "key": "manifesto",
+      "page": "home",
+      "label": "Find your people",
+      "fields": [
+        { "key": "heading", "label": "Find your people — heading", "type": "text", "value": "Find your people" },
+        { "key": "blurb", "label": "Find your people — blurb", "type": "textarea", "value": "Whether that means your next new hire, lifelong mentor, or even a gym buddy, our experiences connect like-minded people to help everyone level up." },
+        { "key": "ctaLabel", "label": "Find your people — button text", "type": "text", "value": "Apply" }
+      ]
+    },
+    {
+      "key": "sponsors",
+      "page": "home",
+      "label": "Previous sponsors",
+      "fields": [
+        { "key": "label", "label": "Sponsors label", "type": "text", "value": "Previous sponsors" }
+      ]
+    },
+    {
+      "key": "passport",
+      "page": "home",
+      "label": "The passport book",
+      "fields": [
+        { "key": "cover", "label": "Passport cover image", "type": "image", "value": "/assets/passport/cover.png" },
+        { "key": "insideCoverHeading", "label": "Inside cover — heading", "type": "text", "value": "Collect the rooms" },
+        { "key": "insideCoverFootnote", "label": "Inside cover — footnote", "type": "text", "value": "Stamps are earned, never given" },
+        { "key": "idTitle", "label": "ID page — title", "type": "text", "value": "Spilt Social — Social Passport" },
+        { "key": "idBearer", "label": "ID page — bearer", "type": "text", "value": "You" },
+        { "key": "idIssued", "label": "ID page — issued", "type": "text", "value": "Columbus, OH" },
+        { "key": "idExpires", "label": "ID page — expires", "type": "text", "value": "Never, if you use it." },
+        { "key": "eventFooter", "label": "Event page — footer line", "type": "text", "value": "posh.vip · admits one · non-transferable" },
+        { "key": "blankPage", "label": "Last blank page — message", "type": "text", "value": "More stamps coming — check back soon." },
+        { "key": "completeMessage", "label": "All stamps collected — message", "type": "text", "value": "Frequent flyer. Apply." }
+      ]
+    },
+    {
+      "key": "experiences",
+      "page": "home",
+      "label": "The experiences",
+      "fields": [
+        { "key": "heading", "label": "Experiences — heading", "type": "text", "value": "The experiences." },
+        { "key": "moveAndMingleName", "label": "Move & Mingle — name", "type": "text", "value": "Move & Mingle" },
+        { "key": "moveAndMingleCopy", "label": "Move & Mingle description", "type": "textarea", "value": "Sweat first, socialize second. A free-flowing workout and social at spots like Bridge Park — meet your next gym buddy, cofounder, or both, at resting heart rate and then well above it." },
+        { "key": "moveAndMinglePhoto", "label": "Move & Mingle photo", "type": "image", "value": "" },
+        { "key": "moveFestName", "label": "Move Fest — name", "type": "text", "value": "Move Fest" },
+        { "key": "moveFestCopy", "label": "Move Fest description", "type": "textarea", "value": "Our biggest day of the year. Movement, music, and community taking over Huntington Park — part festival, part group workout, all Columbus." },
+        { "key": "moveFestPhoto", "label": "Move Fest photo", "type": "image", "value": "" },
+        { "key": "businessHopName", "label": "Business Hop — name", "type": "text", "value": "Business Hop" },
+        { "key": "businessHopCopy", "label": "Business Hop description", "type": "textarea", "value": "The signature. A curated mentorship crawl across the city's most distinguished venues — dozens of Columbus's sharpest mentors and operators, now hopping through Cleveland and Cincinnati too." },
+        { "key": "businessHopPhoto", "label": "Business Hop photo", "type": "image", "value": "" },
+        { "key": "foundersFairName", "label": "Founders Fair — name", "type": "text", "value": "Founders Fair" },
+        { "key": "foundersFairCopy", "label": "Founders Fair description", "type": "textarea", "value": "100 student founders. Top investors and operators. One day at The Loom built around real feedback, real connections, and real chances." },
+        { "key": "foundersFairPhoto", "label": "Founders Fair photo", "type": "image", "value": "" },
+        { "key": "taptName", "label": "Tapt — name", "type": "text", "value": "Tapt" },
+        { "key": "taptCopy", "label": "Tapt description", "type": "textarea", "value": "A curated community for meaningful connections. That's all we can say for now — the rest, you find out in the room." },
+        { "key": "taptPhoto", "label": "Tapt photo", "type": "image", "value": "" },
+        { "key": "taptUrl", "label": "Tapt apply link", "type": "url", "value": "https://posh.vip/e/tapt-social" }
+      ]
+    },
+    {
+      "key": "shop",
+      "page": "home",
+      "label": "The shop",
+      "fields": [
+        { "key": "visible", "label": "Show the shop section", "type": "toggle", "value": "true" },
+        { "key": "heading", "label": "Shop — heading", "type": "text", "value": "The shop." },
+        { "key": "intro", "label": "Shop — intro", "type": "textarea", "value": "Wear the cup to the next one." },
+        { "key": "buyLabel", "label": "Shop — buy button text", "type": "text", "value": "Buy" },
+        { "key": "comingSoon", "label": "Shop — message before the store opens", "type": "text", "value": "Shop opens soon." }
+      ]
+    },
+    {
+      "key": "subscribe",
+      "page": "home",
+      "label": "Subscribe",
+      "fields": [
+        { "key": "heading", "label": "Subscribe — heading", "type": "text", "value": "Hear about events first." },
+        { "key": "placeholder", "label": "Subscribe — email box hint", "type": "text", "value": "you@example.com" },
+        { "key": "buttonLabel", "label": "Subscribe — button text", "type": "text", "value": "Subscribe" },
+        { "key": "success", "label": "Subscribe — thank-you message", "type": "text", "value": "You're on the list." }
+      ]
+    },
+    {
+      "key": "socials",
+      "page": "home",
+      "label": "Social links",
+      "fields": [
+        { "key": "menuHeading", "label": "Phone menu — heading", "type": "text", "value": "Find us" },
+        { "key": "instagram", "label": "Instagram link", "type": "url", "value": "https://www.instagram.com/spiltsocialclub/" },
+        { "key": "linkedin", "label": "LinkedIn link", "type": "url", "value": "https://www.linkedin.com/company/spilt-social" },
+        { "key": "tiktok", "label": "TikTok link", "type": "url", "value": "https://www.tiktok.com/@spiltsocial" },
+        { "key": "posh", "label": "Posh link", "type": "url", "value": "https://posh.vip/g/spilt-social-1" }
+      ]
+    },
+    {
+      "key": "footer",
+      "page": "home",
+      "label": "Footer",
+      "fields": [
+        { "key": "contactEmail", "label": "Contact email", "type": "email", "value": "business@spiltsocial.com" },
+        { "key": "copyright", "label": "Copyright line", "type": "text", "value": "© 2026 Spilt Social" }
+      ]
+    },
+    {
+      "key": "partner",
+      "page": "partner",
+      "label": "Partner page",
+      "fields": [
+        { "key": "heading", "label": "Partner page — headline", "type": "text", "value": "Partner with Spilt Social." },
+        { "key": "blurb", "label": "Partner page — pitch", "type": "textarea", "value": "Columbus's most connected room — founders, operators, and the people betting on this city, gathered a hundred at a time. Put your brand at the table where the next Columbus gets decided." },
+        { "key": "image", "label": "Partner page — background image", "type": "image", "value": "/assets/passport/cover.png" },
+        { "key": "formHeading", "label": "Form — heading", "type": "text", "value": "Tell us who's asking." },
+        { "key": "interestsLabel", "label": "Form — interests label", "type": "text", "value": "I'm interested in:" },
+        { "key": "interestsHint", "label": "Form — interests hint", "type": "text", "value": "Optional — we'll send the matching decks." },
+        { "key": "submitLabel", "label": "Form — send button text", "type": "text", "value": "Start the conversation" },
+        { "key": "successStamp", "label": "Thank-you — stamp word", "type": "text", "value": "Received" },
+        { "key": "successHeading", "label": "Thank-you — headline", "type": "text", "value": "We'll be in touch." },
+        { "key": "successBody", "label": "Thank-you — message", "type": "textarea", "value": "Expect a note from the team within a couple of days — decks and dates included." }
+      ]
+    },
+    {
+      "key": "partnerEmail",
+      "page": "partner",
+      "label": "Partner thank-you email",
+      "fields": [
+        { "key": "subject", "label": "Email subject", "type": "text", "value": "Thanks for reaching out to Spilt Social" },
+        { "key": "heading", "label": "Email headline", "type": "text", "value": "Your cup's on the table." },
+        { "key": "body", "label": "Email message", "type": "textarea", "value": "Thanks for raising your hand. Someone from our team will reach out within a couple of days to talk dates, rooms, and what a partnership could look like. Any decks for the experiences you picked are attached." },
+        { "key": "signoff", "label": "Email sign-off", "type": "text", "value": "— The Spilt Social team" }
+      ]
+    }
+  ]
+}

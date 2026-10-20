@@ -1,10 +1,22 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { SpiltEvent } from "@/lib/events";
 import { ctaForFormat, type FormatSlug } from "@/lib/formats";
 import Sticker from "./Sticker";
 import { STAMPS, Stamp } from "./stamps";
+
+/* editable book copy (content section "passport"), read by every page */
+const BookCopy = createContext<Record<string, string>>({});
+const useBookCopy = () => useContext(BookCopy);
 
 const CHARCOAL = "#2A2620";
 const GOLD = "#C69D60";
@@ -68,13 +80,14 @@ function pageStyle(side: PageSide): React.CSSProperties {
 
 /** the cropped cover render as a page face (shared desktop + mobile) */
 function CoverFace() {
+  const t = useBookCopy();
   return (
     <div className="relative h-full w-full overflow-hidden" style={{ backgroundColor: "#1B1F3B" }}>
       {/* the render's navy leather occupies only ~67% of the file
           (measured); crop computed from its bounding box */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/assets/passport/cover.png"
+        src={t.cover || "/assets/passport/cover.png"}
         alt="Spilt Social passport cover"
         style={{
           position: "absolute",
@@ -89,13 +102,14 @@ function CoverFace() {
 }
 
 function InsideCover({ earned }: { earned: Set<string> }) {
+  const t = useBookCopy();
   return (
     <div className="flex h-full w-full flex-col" style={pageStyle("left")}>
       <p
         className="text-center font-mono text-[clamp(7px,3.2cqw,11px)] tracking-[0.3em] uppercase opacity-60"
         style={{ color: CHARCOAL }}
       >
-        Collect the rooms
+        {t.insideCoverHeading}
       </p>
       <div className="mt-[6%] flex flex-wrap items-start justify-center gap-[4%]">
         {STAMPS.map((s) =>
@@ -118,20 +132,21 @@ function InsideCover({ earned }: { earned: Set<string> }) {
         className="mt-auto text-center font-mono text-[clamp(6px,2.8cqw,10px)] tracking-[0.24em] uppercase opacity-40"
         style={{ color: CHARCOAL }}
       >
-        Stamps are earned, never given
+        {t.insideCoverFootnote}
       </p>
     </div>
   );
 }
 
 function IdPage() {
+  const t = useBookCopy();
   return (
     <div className="flex h-full w-full flex-col" style={pageStyle("right")}>
       <p
         className="font-mono text-[clamp(7px,3.4cqw,12px)] tracking-[0.26em] uppercase"
         style={{ color: CHARCOAL, opacity: 0.7 }}
       >
-        Spilt Social — Social Passport
+        {t.idTitle}
       </p>
       <div
         className="mt-[8%] space-y-[4%] text-[clamp(10px,5.2cqw,17px)]"
@@ -139,9 +154,9 @@ function IdPage() {
       >
         {(
           [
-            ["Bearer", "You"],
-            ["Issued", "Columbus, OH"],
-            ["Expires", "Never, if you use it."],
+            ["Bearer", t.idBearer],
+            ["Issued", t.idIssued],
+            ["Expires", t.idExpires],
           ] as const
         ).map(([k, v]) => (
           <p key={k} className="flex items-baseline gap-3">
@@ -158,7 +173,7 @@ function IdPage() {
           className="truncate font-mono text-[clamp(7px,3.2cqw,11px)] tracking-[0.08em] opacity-45"
           style={{ color: CHARCOAL }}
         >
-          P&lt;USA&lt;SPILT&lt;SOCIAL&lt;&lt;COLUMBUS&lt;OH&lt;EST2023&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+          {t.mrz}
         </p>
       </div>
     </div>
@@ -175,6 +190,7 @@ function IdPage() {
  *  sits directly on the page paper — no inner card; overflow:hidden
  *  on the page (via pageStyle) is the hard containment guarantee. */
 function EventPage({ ev, side }: { ev: SpiltEvent; side: PageSide }) {
+  const t = useBookCopy();
   const cta = ctaForFormat(ev.format);
   return (
     <div
@@ -240,7 +256,7 @@ function EventPage({ ev, side }: { ev: SpiltEvent; side: PageSide }) {
         className="w-full pt-[3%] text-center font-mono text-[clamp(5.5px,2.6cqw,9px)] leading-tight tracking-[0.12em] uppercase opacity-40"
         style={{ color: CHARCOAL }}
       >
-        posh.vip · admits one · non-transferable
+        {t.eventFooter}
       </p>
     </div>
   );
@@ -248,6 +264,7 @@ function EventPage({ ev, side }: { ev: SpiltEvent; side: PageSide }) {
 
 /** Designed blank page for an odd event count — never a raw empty page. */
 function BlankPage() {
+  const t = useBookCopy();
   return (
     <div
       className="relative flex h-full w-full flex-col items-center justify-center"
@@ -278,7 +295,7 @@ function BlankPage() {
         className="mt-[8%] text-center font-mono text-[clamp(7px,3.2cqw,11px)] tracking-[0.26em] uppercase opacity-55"
         style={{ color: CHARCOAL }}
       >
-        More stamps coming — check back soon.
+        {t.blankPage}
       </p>
     </div>
   );
@@ -668,7 +685,24 @@ function MobileBook({
   );
 }
 
+/** Public entry: provides the editable book copy to every page face. */
 export default function PassportBook({
+  copy,
+  ...props
+}: {
+  copy: Record<string, string>;
+  events: SpiltEvent[];
+  earned: Set<string>;
+  onSpreadViewed?: (format: FormatSlug) => void;
+}) {
+  return (
+    <BookCopy.Provider value={copy}>
+      <PassportBookInner {...props} />
+    </BookCopy.Provider>
+  );
+}
+
+function PassportBookInner({
   events,
   earned,
   onSpreadViewed,

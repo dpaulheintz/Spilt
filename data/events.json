@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-03T00:38:27.004Z",
+  "fetchedAt": "2026-10-20T16:05:48.595Z",
   "strategy": "a (group JSON API)",
   "events": [
     {
@@ -616,7 +616,7 @@
       "venue": "Ohio Statehouse",
       "city": "Columbus",
       "poshUrl": "https://posh.vip/e/the-columbus-business-hop-at-the-ohio-statehouse",
-      "imageUrl": "https://images.posh.vip/originals/6a71c1d257e655081229ac24"
+      "imageUrl": "https://images.posh.vip/originals/6aa92d3dc2ee37c2025bbe4a"
     },
     {
       "id": "6a7e2eff5c03d602f8114f28",
@@ -649,40 +649,62 @@
       "venue": "Prim on 5th",
       "city": "Cincinnati",
       "poshUrl": "https://posh.vip/e/the-cincinnati-business-hop-at-prim",
-      "imageUrl": "https://images.posh.vip/originals/6a7b0bad2b5d3a828441a04a"
+      "imageUrl": "https://images.posh.vip/originals/6ab2a8fdb576caa4a2091cad"
     },
     {
       "id": "6a8c8850360d1cbd8cdb57bc",
       "title": "Tapt Social",
       "format": "tapt",
-      "dateISO": "2026-10-08T22:30:00.000Z",
+      "dateISO": "2026-10-14T22:30:00.000Z",
       "timeDisplay": "6:30 PM",
-      "venue": "Location revealed after approval",
-      "city": "",
+      "venue": "The 1 Fitness Gahanna",
+      "city": "Columbus",
       "poshUrl": "https://posh.vip/e/tapt-social",
       "imageUrl": "https://images.posh.vip/originals/6a8daac05e4bc56ffb0dd2e3"
     },
     {
       "id": "6a8debeb3fd7a916fa6acd5f",
-      "title": "Rock'n Ball Wines at Domino",
+      "title": "Rock'n Ball Wines at Domino Sugar",
       "format": "other",
       "dateISO": "2026-10-24T23:00:00.000Z",
       "timeDisplay": "7:00 PM",
       "venue": "Domino Sugar Refinery",
       "city": "Brooklyn",
       "poshUrl": "https://posh.vip/e/brooklyn-wine-event",
-      "imageUrl": "https://images.posh.vip/originals/6a959196166deb0f4a290d99"
+      "imageUrl": "https://images.posh.vip/originals/6ab5296ece034c072ee16034"
     },
     {
       "id": "6a6bb0185d9a000fd1213295",
       "title": "The Boardroom Revival",
       "format": "other",
-      "dateISO": "2026-11-05T22:30:00.000Z",
+      "dateISO": "2026-11-02T22:30:00.000Z",
       "timeDisplay": "5:30 PM",
       "venue": "Rock City Church | Polaris",
       "city": "Columbus",
       "poshUrl": "https://posh.vip/e/the-boardroom-revival",
-      "imageUrl": "https://images.posh.vip/originals/6a8e144f37fbce0066c3c489"
+      "imageUrl": "https://images.posh.vip/originals/6ab677b9c9cdd1e157828218"
+    },
+    {
+      "id": "6ad0c4deec39cd60d9e75d4a",
+      "title": "The Business Hop: VIP Pre-Event for the Grand Reopening - Metropolitan at The 9 ",
+      "format": "business-hop",
+      "dateISO": "2026-11-05T20:00:00.000Z",
+      "timeDisplay": "3:00 PM",
+      "venue": "Location revealed after approval",
+      "city": "",
+      "poshUrl": "https://posh.vip/e/the-business-hop-vip-preevent-for-the-grand-reopening-metropolitan-at-the-9",
+      "imageUrl": "https://images.posh.vip/originals/6ad0c69df4ffc5166a7cf39a"
+    },
+    {
+      "id": "6aac2db36af05722e10746a1",
+      "title": "Grand Reopening! Metropolitan at The 9",
+      "format": "other",
+      "dateISO": "2026-11-05T21:30:00.000Z",
+      "timeDisplay": "4:30 PM",
+      "venue": "Location revealed after approval",
+      "city": "",
+      "poshUrl": "https://posh.vip/e/metro-at-the-9-grand-reopening",
+      "imageUrl": "https://images.posh.vip/originals/6aad84d0bed5301ec7bb4905"
     }
   ]
 }

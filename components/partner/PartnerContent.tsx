@@ -67,6 +67,12 @@ export default function PartnerContent({ copy }: { copy: Copy }) {
           website: honeypot, // honeypot field
         }),
       });
+      if (res.status === 429) {
+        setServerError(
+          `We've already got a few from you — the team will be in touch. Anything urgent: ${contactEmail}.`
+        );
+        return;
+      }
       if (!res.ok) throw new Error(`status ${res.status}`);
       setReceived(true);
     } catch {

@@ -29,6 +29,8 @@ const CHARCOAL = "#2A2620";
 const NAVY = "#1B1F3B";
 const GOLD = "#C69D60";
 const GOLD_HI = "#E8C687";
+// brand gold reads at 2.3:1 as text on cream; this deepened gold is 4.5:1
+const GOLD_TEXT = "#896C42";
 const HAIRLINE = "rgba(42, 38, 32, 0.14)";
 
 const STORAGE_KEY = "spilt-passport-stamps";
@@ -78,6 +80,8 @@ export default function PassportContent({
   const [modalOpen, setModalOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [subscribing, setSubscribing] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
   const [reduced, setReduced] = useState(false);
   const [fly, setFly] = useState<{
     def: StampDef;
@@ -282,7 +286,9 @@ export default function PassportContent({
             const href = isTapt
               ? copy.experiences.taptUrl
               : (ev?.poshUrl ?? copy.socials.posh);
-            const cta = ctaForFormat(f.slug);
+            // no upcoming event → don't promise tickets; say where it goes
+            const ctaLabel =
+              isTapt || ev ? ctaForFormat(f.slug).label : "See upcoming events";
             const name = formatName(copy, f.slug);
             const photo = formatPhoto(copy, f.slug);
             return (
@@ -344,7 +350,7 @@ export default function PassportContent({
                     {formatCopy(copy, f.slug)}
                   </p>
                   <div className="mt-7">
-                    <GoldLink href={href}>{cta.label}</GoldLink>
+                    <GoldLink href={href}>{ctaLabel}</GoldLink>
                   </div>
                 </div>
               </article>
@@ -361,20 +367,51 @@ export default function PassportContent({
         <div className="mx-auto max-w-2xl px-6 py-24 text-center">
           <h2 className="font-heading text-3xl sm:text-4xl">{copy.subscribe.heading}</h2>
           {subscribed ? (
-            <p aria-live="polite" className="mt-8 text-lg" style={{ color: GOLD }}>
+            <p aria-live="polite" className="mt-8 text-lg" style={{ color: GOLD_TEXT }}>
               {copy.subscribe.success}
             </p>
           ) : (
             <form
               className="mx-auto mt-8 flex max-w-md gap-3"
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
-                if (/.+@.+\..+/.test(email)) {
-                  setSubscribed(true);
-                  earn("subscribed", e.currentTarget);
-                } else toast("That address doesn't look right.");
+                const form = e.currentTarget;
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+                  toast("That address doesn't look right.");
+                  return;
+                }
+                setSubscribing(true);
+                try {
+                  const res = await fetch("/api/subscribe", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: email.trim(), website: honeypot }),
+                  });
+                  if (res.status === 429) {
+                    toast("You're already on the list — we've got you.");
+                  } else if (res.ok) {
+                    setSubscribed(true);
+                    earn("subscribed", form);
+                  } else {
+                    toast("That address doesn't look right.");
+                  }
+                } catch {
+                  toast("Couldn't reach us just now — try again in a moment.");
+                } finally {
+                  setSubscribing(false);
+                }
               }}
             >
+              {/* honeypot — hidden from people, filled by bots */}
+              <input
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                className="absolute -left-[9999px] h-0 w-0 opacity-0"
+              />
               <label htmlFor="passport-email" className="sr-only">
                 Email address
               </label>
@@ -391,12 +428,13 @@ export default function PassportContent({
               />
               <button
                 type="submit"
-                className="min-h-[44px] shrink-0 cursor-pointer px-6 py-3 text-[13px] font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2"
+                disabled={subscribing}
+                className="min-h-[44px] shrink-0 cursor-pointer px-6 py-3 text-[13px] font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60"
                 style={{ backgroundColor: GOLD, color: CHARCOAL, outlineColor: CHARCOAL }}
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = GOLD_HI)}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = GOLD)}
               >
-                {copy.subscribe.buttonLabel}
+                {subscribing ? "Adding…" : copy.subscribe.buttonLabel}
               </button>
             </form>
           )}
@@ -490,7 +528,7 @@ export default function PassportContent({
           </div>
         </div>
         <div
-          className="mx-auto max-w-7xl border-t px-6 py-6 pb-24 text-[12px] opacity-60"
+          className="mx-auto max-w-7xl border-t px-6 py-6 pb-24 text-[12px] opacity-70"
           style={{ borderColor: HAIRLINE }}
         >
           {copy.footer.copyright}
@@ -599,7 +637,7 @@ export default function PassportContent({
                         <Stamp def={s} size={84} />
                       ) : (
                         <span
-                          className="flex h-[84px] w-[84px] items-center justify-center border border-dashed text-center text-[9px] leading-tight tracking-[0.12em] uppercase opacity-45"
+                          className="flex h-[84px] w-[84px] items-center justify-center border border-dashed text-center text-[9px] leading-tight tracking-[0.12em] uppercase opacity-70"
                           style={{
                             borderColor: CHARCOAL,
                             borderRadius: s.shape === "round" ? "9999px" : "6px",
@@ -616,7 +654,7 @@ export default function PassportContent({
             </div>
             {complete && (
               <div className="flex items-center justify-center gap-5 px-6 pb-8">
-                <p className="text-[15px] font-medium" style={{ color: GOLD }}>
+                <p className="text-[15px] font-medium" style={{ color: GOLD_TEXT }}>
                   {copy.passport.completeMessage}
                 </p>
                 <GoldLink href={applyUrl} className="!px-5 !py-2.5">

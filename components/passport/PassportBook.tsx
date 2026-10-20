@@ -106,7 +106,7 @@ function InsideCover({ earned }: { earned: Set<string> }) {
   return (
     <div className="flex h-full w-full flex-col" style={pageStyle("left")}>
       <p
-        className="text-center font-mono text-[clamp(7px,3.2cqw,11px)] tracking-[0.3em] uppercase opacity-60"
+        className="text-center font-mono text-[clamp(7px,3.2cqw,11px)] tracking-[0.3em] uppercase opacity-70"
         style={{ color: CHARCOAL }}
       >
         {t.insideCoverHeading}
@@ -129,7 +129,7 @@ function InsideCover({ earned }: { earned: Set<string> }) {
         )}
       </div>
       <p
-        className="mt-auto text-center font-mono text-[clamp(6px,2.8cqw,10px)] tracking-[0.24em] uppercase opacity-40"
+        className="mt-auto text-center font-mono text-[clamp(6px,2.8cqw,10px)] tracking-[0.24em] uppercase opacity-70"
         style={{ color: CHARCOAL }}
       >
         {t.insideCoverFootnote}
@@ -160,7 +160,7 @@ function IdPage() {
           ] as const
         ).map(([k, v]) => (
           <p key={k} className="flex items-baseline gap-3">
-            <span className="text-[0.72em] tracking-[0.18em] uppercase opacity-55">
+            <span className="text-[0.72em] tracking-[0.18em] uppercase opacity-70">
               {k}
             </span>
             <span className="font-mono">{v}</span>
@@ -170,7 +170,7 @@ function IdPage() {
       <div className="mt-auto">
         <div className="mb-[4%] h-px w-full" style={{ backgroundColor: `${GOLD}88` }} />
         <p
-          className="truncate font-mono text-[clamp(7px,3.2cqw,11px)] tracking-[0.08em] opacity-45"
+          className="truncate font-mono text-[clamp(7px,3.2cqw,11px)] tracking-[0.08em] opacity-70"
           style={{ color: CHARCOAL }}
         >
           {t.mrz}
@@ -224,15 +224,15 @@ function EventPage({ ev, side }: { ev: SpiltEvent; side: PageSide }) {
         style={{ color: CHARCOAL, overflowWrap: "break-word" }}
       >
         <p>
-          <span className="opacity-50">DATE:&nbsp;&nbsp;</span>
+          <span className="opacity-70">DATE:&nbsp;&nbsp;</span>
           {fmtDate(ev.dateISO)}
         </p>
         <p>
-          <span className="opacity-50">TIME:&nbsp;&nbsp;</span>
+          <span className="opacity-70">TIME:&nbsp;&nbsp;</span>
           {ev.timeDisplay.toUpperCase()}
         </p>
         <p className="line-clamp-2">
-          <span className="opacity-50">VENUE:&nbsp;</span>
+          <span className="opacity-70">VENUE:&nbsp;</span>
           {ev.venue}
           {ev.city ? `, ${ev.city}` : ""}
         </p>
@@ -253,7 +253,7 @@ function EventPage({ ev, side }: { ev: SpiltEvent; side: PageSide }) {
       {/* flexible gap: CTA → footer (largest share) */}
       <div aria-hidden />
       <p
-        className="w-full pt-[3%] text-center font-mono text-[clamp(5.5px,2.6cqw,9px)] leading-tight tracking-[0.12em] uppercase opacity-40"
+        className="w-full pt-[3%] text-center font-mono text-[clamp(5.5px,2.6cqw,9px)] leading-tight tracking-[0.12em] uppercase opacity-70"
         style={{ color: CHARCOAL }}
       >
         {t.eventFooter}
@@ -292,7 +292,7 @@ function BlankPage() {
         <circle cx="100" cy="100" r="88" fill="none" stroke={GOLD} strokeWidth="0.8" />
       </svg>
       <p
-        className="mt-[8%] text-center font-mono text-[clamp(7px,3.2cqw,11px)] tracking-[0.26em] uppercase opacity-55"
+        className="mt-[8%] text-center font-mono text-[clamp(7px,3.2cqw,11px)] tracking-[0.26em] uppercase opacity-70"
         style={{ color: CHARCOAL }}
       >
         {t.blankPage}

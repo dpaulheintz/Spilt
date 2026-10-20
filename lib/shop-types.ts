@@ -41,7 +41,7 @@ export const DEMO_PRODUCTS: ShopProduct[] = [
   {
     id: "fill-your-cup-tee",
     name: "Fill Your Cup Tee",
-    description: "Cream cotton, gold cup on the chest.",
+    description: "Cream, with the gold cup on the chest.",
     imageUrl: "",
     placeholder: "cream",
     currency: "USD",

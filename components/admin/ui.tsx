@@ -13,7 +13,7 @@ export const CHARCOAL = "#2A2620";
 export const GOLD = "#C69D60";
 export const GOLD_HI = "#E8C687";
 export const HAIRLINE = "rgba(42, 38, 32, 0.14)";
-export const MUTED = "rgba(42, 38, 32, 0.62)";
+export const MUTED = "rgba(42, 38, 32, 0.7)"; // ≥4.5:1 on cream and panel
 
 export const PREVIEW_MESSAGE = "Preview only — nothing was changed.";
 export const previewOnly = () => toast(PREVIEW_MESSAGE);

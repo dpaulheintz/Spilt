@@ -47,7 +47,7 @@ export default function ShopScreen({
               <p className="mt-1 max-w-lg text-[14px] leading-relaxed" style={{ color: MUTED }}>
                 {connected
                   ? "Products refresh from Square every 10 minutes."
-                  : "The site is showing three sample shirts, and Buy says “Shop opens soon.” Connecting Square takes about 20 minutes — the steps are in SETUP-SQUARE.md."}
+                  : "The site is showing three sample shirts marked “Shop opens soon.” Connecting your Square account takes about 20 minutes — your web developer has the step-by-step guide."}
               </p>
             </div>
           </div>

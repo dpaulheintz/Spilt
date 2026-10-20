@@ -217,7 +217,7 @@ export default function PartnerContent({ copy }: { copy: Copy }) {
                 <legend className="mb-1 text-[12px] font-medium tracking-[0.14em] uppercase opacity-70">
                   {t.interestsLabel}
                 </legend>
-                <p className="mb-3 text-[12px] opacity-55">
+                <p className="mb-3 text-[12px] opacity-70">
                   {t.interestsHint}
                 </p>
                 <div className="flex flex-wrap gap-3">
@@ -280,7 +280,7 @@ export default function PartnerContent({ copy }: { copy: Copy }) {
       </main>
 
       <footer className="border-t" style={{ borderColor: HAIRLINE }}>
-        <div className="mx-auto max-w-7xl px-6 py-6 pb-24 text-[12px] opacity-60">
+        <div className="mx-auto max-w-7xl px-6 py-6 pb-24 text-[12px] opacity-70">
           {copy.footer.copyright} · {contactEmail}
         </div>
       </footer>

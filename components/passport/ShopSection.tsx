@@ -176,7 +176,7 @@ function ProductCard({
           })}
         </div>
       )}
-      <p aria-live="polite" className="mt-2 min-h-[18px] text-[12px] opacity-60">
+      <p aria-live="polite" className="mt-2 min-h-[18px] text-[12px] opacity-70">
         {soldOutEverywhere
           ? "Sold out"
           : product.variations.some((v) => !v.available)
@@ -230,7 +230,18 @@ export default function ShopSection({
       <div className="mx-auto max-w-6xl px-6 py-24 sm:py-28">
         <div className="mb-12 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <h2 className="font-heading text-4xl sm:text-5xl">{copy.heading}</h2>
-          {copy.intro && <p className="max-w-sm text-[15px] opacity-70 sm:text-right">{copy.intro}</p>}
+          <div className="flex flex-col gap-2 sm:items-end">
+            {/* before Square is connected, say so before anyone picks a size */}
+            {shop.mode === "demo" && (
+              <span
+                className="w-max border px-3 py-1 text-[12px] font-medium tracking-[0.12em] uppercase"
+                style={{ borderColor: GOLD, color: CHARCOAL }}
+              >
+                {copy.comingSoon}
+              </span>
+            )}
+            {copy.intro && <p className="max-w-sm text-[15px] opacity-70 sm:text-right">{copy.intro}</p>}
+          </div>
         </div>
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
           {shop.products.map((p) => (

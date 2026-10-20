@@ -47,8 +47,6 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const pathname = usePathname();
-  const current = ADMIN_NAV.find((n) => n.href === pathname)?.label ?? "Admin";
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -105,16 +103,13 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         {/* desktop sidebar */}
         <nav
           aria-label="Admin sections"
-          className="sticky top-[61px] hidden h-[calc(100dvh-61px)] w-60 shrink-0 border-r py-6 lg:block"
+          className="sticky top-[69px] hidden h-[calc(100dvh-69px)] w-60 shrink-0 border-r py-6 lg:block"
           style={{ borderColor: HAIRLINE }}
         >
           <NavLinks />
         </nav>
 
         <main className="min-w-0 flex-1 px-4 py-8 pb-32 sm:px-8 lg:px-12">
-          <p className="mb-1 text-[12px] tracking-[0.18em] uppercase lg:hidden" style={{ color: MUTED }}>
-            {current}
-          </p>
           {children}
         </main>
       </div>

@@ -93,9 +93,17 @@ export default function SocialsPanel({
       }
     };
     window.addEventListener("keydown", onKey);
+
+    // the panel is lg:hidden — rotating a tablet past 1024px would hide
+    // it while the scroll lock and focus trap stayed on, so close instead
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const onBreakpoint = () => desktop.matches && onClose();
+    desktop.addEventListener("change", onBreakpoint);
+
     return () => {
       clearTimeout(focusTimer);
       window.removeEventListener("keydown", onKey);
+      desktop.removeEventListener("change", onBreakpoint);
       html.style.overflow = prevOverflow;
       document.body.style.overflow = prevBodyOverflow;
       returnTarget?.focus();
@@ -176,7 +184,7 @@ export default function SocialsPanel({
                 </span>
                 <span className="flex min-w-0 flex-1 flex-col">
                   <span className="text-[17px]">{SOCIAL_NAMES[key]}</span>
-                  <span className="truncate text-[13px] opacity-60">
+                  <span className="truncate text-[13px] opacity-70">
                     {socialDetail(key, links[key])}
                   </span>
                 </span>

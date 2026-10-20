@@ -4,6 +4,7 @@ import path from "node:path";
 import { getCopy } from "@/lib/content-store";
 import { sendEmail, emailConfigured, type EmailAttachment } from "@/lib/email";
 import { renderEmail } from "@/lib/email-templates";
+import { rateLimited } from "@/lib/rate-limit";
 import { FORMATS, formatName, type FormatSlug } from "@/lib/formats";
 
 /**
@@ -30,22 +31,6 @@ type PartnerSubmission = {
 };
 
 const VALID_INTERESTS = new Set<string>(FORMATS.map((f) => f.slug));
-
-/* Best-effort rate limit: 5 submissions per IP per 10 minutes. In-memory,
-   so it's per server instance — enough to blunt a script hammering the
-   form, not a guarantee. TODO(supabase): move to a shared store. */
-const WINDOW_MS = 10 * 60 * 1000;
-const MAX_PER_WINDOW = 5;
-const hits = new Map<string, number[]>();
-
-function rateLimited(ip: string): boolean {
-  const now = Date.now();
-  const recent = (hits.get(ip) ?? []).filter((t) => now - t < WINDOW_MS);
-  recent.push(now);
-  hits.set(ip, recent);
-  if (hits.size > 5000) hits.clear(); // bound memory on a long-lived instance
-  return recent.length > MAX_PER_WINDOW;
-}
 
 async function loadDecks(
   interests: string[],
@@ -94,11 +79,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "validation", fields: errors }, { status: 422 });
   }
 
-  const ip =
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    request.headers.get("x-real-ip") ||
-    "unknown";
-  if (rateLimited(ip)) {
+  // 5 per IP per 10 minutes
+  if (rateLimited("partner", request, { max: 5, windowMs: 10 * 60 * 1000 })) {
     return NextResponse.json({ error: "rate" }, { status: 429 });
   }
 

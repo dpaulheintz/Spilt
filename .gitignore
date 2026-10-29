@@ -40,3 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .env.local
+
+# hero video source masters (4K HEVC, >100MB) — the site serves the web-encoded hero.mp4
+public/assets/passport/*.mov

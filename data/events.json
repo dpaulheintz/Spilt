@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-20T16:05:48.595Z",
+  "fetchedAt": "2026-11-10T00:07:54.512Z",
   "strategy": "a (group JSON API)",
   "events": [
     {
@@ -693,18 +693,29 @@
       "venue": "Location revealed after approval",
       "city": "",
       "poshUrl": "https://posh.vip/e/the-business-hop-vip-preevent-for-the-grand-reopening-metropolitan-at-the-9",
-      "imageUrl": "https://images.posh.vip/originals/6ad0c69df4ffc5166a7cf39a"
+      "imageUrl": "https://images.posh.vip/originals/6ad91dadc3e17417f4592561"
     },
     {
       "id": "6aac2db36af05722e10746a1",
       "title": "Grand Reopening! Metropolitan at The 9",
       "format": "other",
-      "dateISO": "2026-11-05T21:30:00.000Z",
-      "timeDisplay": "4:30 PM",
+      "dateISO": "2026-11-05T21:00:00.000Z",
+      "timeDisplay": "4:00 PM",
       "venue": "Location revealed after approval",
       "city": "",
       "poshUrl": "https://posh.vip/e/metro-at-the-9-grand-reopening",
       "imageUrl": "https://images.posh.vip/originals/6aad84d0bed5301ec7bb4905"
+    },
+    {
+      "id": "6af1f0fcbbb5ae4044999983",
+      "title": "Holiday Hop 2027",
+      "format": "other",
+      "dateISO": "2026-12-17T23:00:00.000Z",
+      "timeDisplay": "6:00 PM",
+      "venue": "Location revealed after approval",
+      "city": "",
+      "poshUrl": "https://posh.vip/e/holiday-hop-2027",
+      "imageUrl": "https://images.posh.vip/originals/6af236c90ea2d475ad3a83f8"
     }
   ]
 }

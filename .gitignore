@@ -43,3 +43,6 @@ next-env.d.ts
 
 # hero video source masters (4K HEVC, >100MB) — the site serves the web-encoded hero.mp4
 public/assets/passport/*.mov
+
+# source masters (full-res photos, 4K video) — never deployed
+/raw/

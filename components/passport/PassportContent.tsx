@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import type { Copy } from "@/lib/content-store";
 import type { SpiltEvent } from "@/lib/events";
@@ -11,6 +12,8 @@ import {
   formatCopy,
   formatName,
   formatPhoto,
+  formatPhotoAlt,
+  formatPhotoFocus,
   type FormatSlug,
 } from "@/lib/formats";
 import { toast } from "@/lib/toast";
@@ -320,12 +323,16 @@ export default function PassportContent({
                     }}
                   >
                     {photo ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      /* lazy by default (below the fold); sizes matches the
+                         frame: half of the 1104px column on desktop, full
+                         width minus page padding on phones */
+                      <Image
                         src={photo}
-                        alt={name}
-                        loading="lazy"
-                        className="absolute inset-0 h-full w-full object-cover"
+                        alt={formatPhotoAlt(copy, f.slug) || name}
+                        fill
+                        sizes="(min-width: 1152px) 552px, (min-width: 1024px) 48vw, calc(100vw - 48px)"
+                        className="object-cover"
+                        style={{ objectPosition: formatPhotoFocus(copy, f.slug) }}
                       />
                     ) : (
                       /* styled placeholder until a photo is set in the

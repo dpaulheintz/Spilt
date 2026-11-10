@@ -71,3 +71,12 @@ export function ctaForFormat(slug: FormatSlug): { label: string; kind: "buy" | "
   if (slug === "other") return { label: "Tickets", kind: "buy" };
   return { label: "Apply", kind: "apply" };
 }
+
+/** CSS object-position for the format photo, e.g. "50% 55%" */
+export function formatPhotoFocus(copy: Copy, slug: FormatSlug): string {
+  return copy.experiences?.[`${formatKey(slug)}PhotoFocus`] || "50% 50%";
+}
+
+export function formatPhotoAlt(copy: Copy, slug: FormatSlug): string {
+  return copy.experiences?.[`${formatKey(slug)}PhotoAlt`] ?? "";
+}
